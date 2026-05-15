@@ -1,0 +1,3 @@
+Resume placeholder.
+
+Replace this file with the final resume PDF and update the download href in app/page.tsx if the filename changes.

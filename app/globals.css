@@ -1,0 +1,780 @@
+@import "tailwindcss";
+
+:root {
+  --background: #282a36;
+  --foreground: #f8f8f2;
+  --font-terminal: "JetBrainsMono Nerd Font Mono", "JetBrainsMono Nerd Font",
+    "JetBrainsMonoNL Nerd Font Mono", "JetBrainsMonoNL Nerd Font",
+    var(--font-jetbrains-mono), "JetBrains Mono", "SFMono-Regular", Consolas,
+    monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-terminal);
+  --font-mono: var(--font-terminal);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-terminal);
+  margin: 0;
+}
+
+button,
+a,
+pre,
+code {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.portfolio-shell {
+  --terminal-font-size: 10.8px;
+  --terminal-line-height: 1.34;
+  --terminal-scale: 1;
+  --terminal-bg: #282a36;
+  --terminal-bg-rgb: 40, 42, 54;
+  --terminal-pane-blur: 8px;
+  --terminal-pane-opacity: 0.85;
+  --terminal-fg: #f8f8f2;
+  --terminal-dim: #8f93a6;
+  --terminal-border: #44475a;
+  --terminal-active: #bd93f9;
+  --terminal-accent: #50fa7b;
+  --terminal-cyan: #8be9fd;
+  --terminal-yellow: #f1fa8c;
+  --terminal-gradient-start: #8be9fd;
+  --terminal-gradient-mid: #bd93f9;
+  --terminal-gradient-end: #ff79c6;
+  --terminal-muted-surface: rgba(68, 71, 90, 0.14);
+  --terminal-selected: rgba(68, 71, 90, 0.24);
+  align-items: center;
+  background: transparent;
+  color: var(--terminal-fg);
+  display: flex;
+  font-size: var(--terminal-font-size);
+  line-height: var(--terminal-line-height);
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.portfolio-shell[data-theme="one-dark-pro"] {
+  --terminal-bg: #282c34;
+  --terminal-bg-rgb: 40, 44, 52;
+  --terminal-fg: #abb2bf;
+  --terminal-dim: #6f7785;
+  --terminal-border: #3e4451;
+  --terminal-active: #61afef;
+  --terminal-accent: #98c379;
+  --terminal-cyan: #56b6c2;
+  --terminal-yellow: #e5c07b;
+  --terminal-gradient-start: #61afef;
+  --terminal-gradient-mid: #c678dd;
+  --terminal-gradient-end: #98c379;
+  --terminal-muted-surface: rgba(62, 68, 81, 0.14);
+  --terminal-selected: rgba(62, 68, 81, 0.24);
+}
+
+.portfolio-shell[data-theme="tokyo-night"] {
+  --terminal-bg: #1a1b26;
+  --terminal-bg-rgb: 26, 27, 38;
+  --terminal-fg: #a9b1d6;
+  --terminal-dim: #565f89;
+  --terminal-border: #414868;
+  --terminal-active: #bb9af7;
+  --terminal-accent: #7aa2f7;
+  --terminal-cyan: #7dcfff;
+  --terminal-yellow: #e0af68;
+  --terminal-gradient-start: #7dcfff;
+  --terminal-gradient-mid: #bb9af7;
+  --terminal-gradient-end: #f7768e;
+  --terminal-muted-surface: rgba(65, 72, 104, 0.14);
+  --terminal-selected: rgba(65, 72, 104, 0.24);
+}
+
+.portfolio-shell[data-theme="catppuccin-mocha"] {
+  --terminal-bg: #1e1e2e;
+  --terminal-bg-rgb: 30, 30, 46;
+  --terminal-fg: #cdd6f4;
+  --terminal-dim: #7f849c;
+  --terminal-border: #45475a;
+  --terminal-active: #89b4fa;
+  --terminal-accent: #a6e3a1;
+  --terminal-cyan: #89dceb;
+  --terminal-yellow: #f9e2af;
+  --terminal-gradient-start: #89dceb;
+  --terminal-gradient-mid: #cba6f7;
+  --terminal-gradient-end: #f5c2e7;
+  --terminal-muted-surface: rgba(69, 71, 90, 0.14);
+  --terminal-selected: rgba(69, 71, 90, 0.24);
+}
+
+.portfolio-shell[data-theme="gruvbox"] {
+  --terminal-bg: #282828;
+  --terminal-bg-rgb: 40, 40, 40;
+  --terminal-fg: #ebdbb2;
+  --terminal-dim: #928374;
+  --terminal-border: #504945;
+  --terminal-active: #fabd2f;
+  --terminal-accent: #b8bb26;
+  --terminal-cyan: #83a598;
+  --terminal-yellow: #fabd2f;
+  --terminal-gradient-start: #83a598;
+  --terminal-gradient-mid: #d3869b;
+  --terminal-gradient-end: #fabd2f;
+  --terminal-muted-surface: rgba(80, 73, 69, 0.14);
+  --terminal-selected: rgba(80, 73, 69, 0.24);
+}
+
+.background-video,
+.background-scrim {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+}
+
+.background-video {
+  filter: saturate(1) brightness(0.9) contrast(1);
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  width: 100%;
+  z-index: 0;
+}
+
+.background-scrim {
+  background: transparent;
+  z-index: 1;
+}
+
+.tmux-window {
+  background: transparent;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: calc(100svh / var(--terminal-scale));
+  overflow: hidden;
+  left: 0;
+  position: fixed;
+  top: 0;
+  transform: scale(var(--terminal-scale));
+  transform-origin: top left;
+  width: calc(100vw / var(--terminal-scale));
+  z-index: 2;
+}
+
+.tmux-grid {
+  background: transparent;
+  display: grid;
+  gap: 0;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 0.92fr);
+  min-height: 0;
+}
+
+.tmux-row {
+  display: grid;
+  gap: 0;
+  min-height: 0;
+}
+
+.tmux-row-top {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tmux-row-bottom {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tmux-pane {
+  -webkit-backdrop-filter: blur(var(--terminal-pane-blur));
+  backdrop-filter: blur(var(--terminal-pane-blur));
+  background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  border-right: 1px solid var(--terminal-border);
+  color: var(--terminal-fg);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.tmux-row > .tmux-pane:last-child {
+  border-right: 0;
+}
+
+.tmux-row-top > .tmux-pane {
+  border-bottom: 1px solid var(--terminal-border);
+}
+
+.tmux-pane.is-active {
+  background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+}
+
+.tmux-pane:not(.is-active) .pane-body {
+  opacity: 0.62;
+}
+
+.tmux-pane:not(.is-active) .pane-titlebar {
+  opacity: 0.78;
+}
+
+.pane-titlebar {
+  align-items: center;
+  color: var(--terminal-dim);
+  display: flex;
+  font-size: var(--terminal-font-size);
+  height: 1.45em;
+  line-height: 1;
+  padding: 0 0 0 3ch;
+  position: relative;
+}
+
+.pane-titlebar::before,
+.pane-titlebar::after {
+  background: var(--terminal-border);
+  content: "";
+  height: 1px;
+  position: absolute;
+  top: 50%;
+}
+
+.pane-titlebar::before {
+  left: 0;
+  width: 2ch;
+}
+
+.pane-titlebar::after {
+  left: calc(3ch + 10ch);
+  right: 0;
+}
+
+.tmux-pane.is-active .pane-titlebar {
+  color: var(--terminal-active);
+}
+
+.pane-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.65em;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.35em 0.7em 0.8em;
+  scrollbar-color: var(--terminal-border) transparent;
+  scrollbar-width: thin;
+}
+
+.pane-body::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.pane-body::-webkit-scrollbar-thumb {
+  background: var(--terminal-border);
+}
+
+.pane-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.command-block {
+  display: grid;
+  gap: 0;
+}
+
+.command-line,
+.post-command-line {
+  align-items: center;
+  color: var(--terminal-fg);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--terminal-font-size);
+  gap: 0.45ch;
+  line-height: var(--terminal-line-height);
+  min-height: 1.34em;
+}
+
+.prompt-user {
+  color: var(--terminal-cyan);
+}
+
+.prompt-path,
+.row-caret,
+.row-name,
+.detail-period,
+.detail-links a,
+.about-actions a,
+.terminal-note,
+.option-token.is-selected,
+.prompt-muted:last-of-type {
+  color: var(--terminal-accent);
+}
+
+.prompt-muted {
+  color: var(--terminal-dim);
+}
+
+.typed-command {
+  color: var(--terminal-fg);
+  overflow-wrap: anywhere;
+}
+
+.terminal-cursor {
+  animation: blink 1.05s steps(1) infinite;
+  background: var(--terminal-fg);
+  display: inline-block;
+  height: 1em;
+  margin-left: 1px;
+  width: 0.55em;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.terminal-output {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.65em;
+  min-height: 0;
+}
+
+.profile-output {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25em;
+  min-height: 0;
+}
+
+.ansi-portrait,
+.name-gradient {
+  color: var(--terminal-fg);
+  font-family: inherit;
+  font-size: var(--terminal-font-size);
+  letter-spacing: 0;
+  line-height: var(--terminal-line-height);
+  margin: 0;
+  overflow: auto;
+  white-space: pre;
+}
+
+.ansi-portrait {
+  color: var(--terminal-fg);
+  align-self: center;
+  flex: 0 0 auto;
+  font-size: calc(var(--terminal-font-size) * 0.36);
+  line-height: 0.6;
+  margin: -1.25em auto -0.9em;
+  max-height: none;
+  overflow: visible;
+}
+
+.name-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--terminal-gradient-start),
+    var(--terminal-gradient-mid),
+    var(--terminal-gradient-end)
+  );
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  letter-spacing: 0;
+  overflow: auto;
+  white-space: pre;
+  -webkit-background-clip: text;
+}
+
+.ansi-bold,
+.detail-output h3,
+.status-left,
+.row-name {
+  font-weight: 800;
+}
+
+.ansi-dim {
+  opacity: 0.72;
+}
+
+.control-stack {
+  display: grid;
+  gap: 0;
+  margin-top: 0;
+}
+
+.control-row {
+  align-items: start;
+  display: grid;
+  gap: 1ch;
+  grid-template-columns: 4ch 7ch minmax(0, 1fr);
+  min-height: 1.34em;
+}
+
+.control-icon {
+  color: var(--terminal-dim);
+}
+
+.control-label,
+.row-summary,
+.tag-line span,
+.detail-output h3 span {
+  color: var(--terminal-dim);
+}
+
+.option-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1ch;
+}
+
+.option-token {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.5ch;
+  min-height: 1.34em;
+  padding: 0;
+}
+
+.option-token:hover {
+  color: var(--terminal-fg);
+}
+
+.radio-dot {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  display: inline-block;
+  height: 0.68em;
+  position: relative;
+  width: 0.68em;
+}
+
+.option-token.is-selected .radio-dot {
+  background: currentColor;
+}
+
+.terminal-list {
+  display: grid;
+  gap: 0;
+}
+
+.terminal-row {
+  align-items: start;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: grid;
+  font-size: var(--terminal-font-size);
+  gap: 1ch;
+  grid-template-columns: 1ch minmax(16ch, 0.38fr) minmax(0, 1fr);
+  line-height: var(--terminal-line-height);
+  min-height: 1.34em;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.terminal-row:hover,
+.terminal-row.is-selected {
+  background: transparent;
+}
+
+.terminal-row:hover .row-name,
+.terminal-row.is-selected .row-name {
+  color: var(--terminal-fg);
+}
+
+.row-name,
+.row-summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-output {
+  border-top: 1px dashed var(--terminal-dim);
+  display: grid;
+  gap: 0.55em 1ch;
+  grid-template-columns: minmax(12ch, 0.36fr) minmax(0, 1fr);
+  margin-top: auto;
+  padding-top: 0.75em;
+}
+
+.detail-output.compact {
+  display: block;
+}
+
+.detail-output h3,
+.detail-output p,
+.about-output p {
+  color: var(--terminal-fg);
+  font-size: var(--terminal-font-size);
+  line-height: var(--terminal-line-height);
+  margin: 0;
+}
+
+.detail-output h3 {
+  grid-column: 2;
+}
+
+.detail-output p {
+  grid-column: 2;
+}
+
+.detail-period {
+  margin-bottom: 0.35em !important;
+}
+
+.detail-media {
+  align-self: stretch;
+  background: var(--terminal-muted-surface);
+  grid-row: 1 / span 4;
+  min-height: 8em;
+  overflow: hidden;
+  position: relative;
+}
+
+.detail-media img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.terminal-preview {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 0.5em
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 1em
+    ),
+    var(--terminal-muted-surface);
+  display: grid;
+  gap: 1em;
+  height: 100%;
+  min-height: 8em;
+  padding: 1em;
+}
+
+.terminal-preview span {
+  background: var(--terminal-accent);
+  display: block;
+  height: 0.55em;
+}
+
+.terminal-preview span:nth-child(2) {
+  background: var(--terminal-cyan);
+  width: 72%;
+}
+
+.terminal-preview span:nth-child(3) {
+  background: var(--terminal-active);
+  width: 46%;
+}
+
+.tag-line,
+.detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1ch;
+  grid-column: 2;
+}
+
+.detail-links a,
+.about-actions a {
+  border: 0;
+  display: inline-flex;
+  min-height: 1.34em;
+  padding: 0;
+  text-decoration: none;
+}
+
+.detail-links a:hover,
+.about-actions a:hover {
+  color: var(--terminal-fg);
+}
+
+.about-output {
+  display: grid;
+  gap: 1em;
+  margin: auto 0;
+}
+
+.about-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2ch;
+}
+
+.terminal-note {
+  border: 0;
+  padding-left: 0;
+}
+
+.tmux-statusbar {
+  align-items: center;
+  background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  border-top: 1px solid var(--terminal-border);
+  color: var(--terminal-fg);
+  display: grid;
+  font-size: var(--terminal-font-size);
+  gap: 1ch;
+  grid-template-columns: 1fr auto 1fr;
+  min-height: 1.7em;
+  padding: 0 0.45em;
+}
+
+.status-center {
+  color: var(--terminal-active);
+  justify-self: center;
+}
+
+.status-right {
+  color: var(--terminal-dim);
+  justify-self: end;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .portfolio-shell {
+    --terminal-font-size: 9.6px;
+    --terminal-scale: 1;
+  }
+
+  .terminal-row {
+    grid-template-columns: 1ch minmax(14ch, 0.44fr) minmax(0, 1fr);
+  }
+
+  .detail-output {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-media,
+  .detail-output h3,
+  .detail-output p,
+  .tag-line,
+  .detail-links {
+    grid-column: 1;
+  }
+
+  .detail-media {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    overflow: auto;
+  }
+
+  .portfolio-shell {
+    align-items: stretch;
+    min-height: 100svh;
+    overflow: auto;
+    --terminal-scale: 1;
+  }
+
+  .tmux-window {
+    height: auto;
+    min-height: 100svh;
+    width: 100%;
+  }
+
+  .tmux-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tmux-row,
+  .tmux-row-top,
+  .tmux-row-bottom {
+    display: contents;
+  }
+
+  .tmux-pane {
+    min-height: 34em;
+  }
+
+  .tmux-statusbar {
+    grid-template-columns: 1fr;
+    padding: 0.35em 0.7em;
+  }
+
+  .status-left,
+  .status-center,
+  .status-right {
+    justify-self: start;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 560px) {
+  .portfolio-shell {
+    --terminal-font-size: 8.4px;
+  }
+
+  .pane-body {
+    padding: 0.35em 0.6em 0.8em;
+  }
+
+  .control-row {
+    grid-template-columns: 4ch 1fr;
+  }
+
+  .option-strip {
+    grid-column: 1 / -1;
+  }
+
+  .terminal-row {
+    grid-template-columns: 1ch 1fr;
+  }
+
+  .row-summary {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-cursor {
+    animation: none;
+  }
+}
