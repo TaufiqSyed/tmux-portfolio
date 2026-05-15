@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import {
+  educationItems,
   experiences,
-  extracurricularItems,
   profileContent,
   projects,
   researchItems,
+  type EducationItem,
   type ExperienceItem,
-  type ExtracurricularItem,
   type ProjectItem,
   type ResearchItem,
 } from "./portfolio-content";
@@ -150,11 +150,11 @@ const nameAscii = String.raw`
 `;
 
 const paneAsciiTitles: Record<string, string> = {
-  extracurriculars: [
-    " _____  _______ ___    _   ___",
-    "| __\\ \\/ /_   _| _ \\  /_\\ / __|",
-    "| _| >  <  | | |   / / _ \\\\__ \\",
-    "|___/_/\\_\\ |_| |_|_\\/_/ \\_\\___/",
+  education: [
+    " ___ ___  _   _  ___   _ _____ ___ ___  _  _",
+    "| __|   \\| | | |/ __| /_\\_   _|_ _/ _ \\| \\| |",
+    "| _|| |) | |_| | (__ / _ \\| |  | | (_) | .` |",
+    "|___|___/ \\___/ \\___/_/ \\_\\_| |___\\___/|_|\\_|",
   ].join("\n"),
   background: [
     " ___   _   ___ _  _____ ___ ___  ___  _   _ _  _ ___",
@@ -666,7 +666,7 @@ function ProjectList({
 
   return (
     <>
-      <div className="terminal-list" role="list">
+      <div className="terminal-list terminal-list-readable" role="list">
         {items.map((item) => {
           const isSelected = item.id === selected.id;
 
@@ -727,7 +727,7 @@ function ResearchList({
 
   return (
     <>
-      <div className="terminal-list" role="list">
+      <div className="terminal-list terminal-list-readable" role="list">
         {items.map((item) => {
           const isSelected = item.id === selected.id;
 
@@ -782,7 +782,7 @@ function ExperienceList({
 
   return (
     <>
-      <div className="terminal-list" role="list">
+      <div className="terminal-list terminal-list-readable" role="list">
         {items.map((item) => {
           const isSelected = item.id === selected.id;
 
@@ -832,12 +832,12 @@ function ExperienceList({
   );
 }
 
-function ExtracurricularList({
+function EducationList({
   items,
   selectedId,
   onSelect,
 }: {
-  items: ExtracurricularItem[];
+  items: EducationItem[];
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
@@ -845,7 +845,7 @@ function ExtracurricularList({
 
   return (
     <>
-      <div className="terminal-list" role="list">
+      <div className="terminal-list terminal-list-readable" role="list">
         {items.map((item) => {
           const isSelected = item.id === selected.id;
 
@@ -884,8 +884,8 @@ export default function Home() {
     experiences[0].id,
   );
   const [selectedResearch, setSelectedResearch] = useState(researchItems[0].id);
-  const [selectedExtracurricular, setSelectedExtracurricular] = useState(
-    extracurricularItems[0].id,
+  const [selectedEducation, setSelectedEducation] = useState(
+    educationItems[0].id,
   );
   const [activePane, setActivePane] = useState("profile");
   const [zoomedPane, setZoomedPane] = useState<string | null>(null);
@@ -1200,18 +1200,18 @@ export default function Home() {
 
             <TmuxPane
               activePane={activePane}
-              asciiTitle={paneAsciiTitles.extracurriculars}
-              command="~/Portfolio/bin/extracurriculars --interactive"
-              id="extracurriculars"
-              isZoomed={zoomedPane === "extracurriculars"}
+              asciiTitle={paneAsciiTitles.education}
+              command="~/Portfolio/bin/education --interactive"
+              id="education"
+              isZoomed={zoomedPane === "education"}
               onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
-              title="Extras"
+              title="Education"
             >
-              <ExtracurricularList
-                items={extracurricularItems}
-                onSelect={setSelectedExtracurricular}
-                selectedId={selectedExtracurricular}
+              <EducationList
+                items={educationItems}
+                onSelect={setSelectedEducation}
+                selectedId={selectedEducation}
               />
             </TmuxPane>
           </div>

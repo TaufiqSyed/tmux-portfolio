@@ -48,7 +48,7 @@ export type ResearchItem = {
   tags?: string[];
 };
 
-export type ExtracurricularItem = {
+export type EducationItem = {
   id: string;
   title: string;
   summary: string;
@@ -190,18 +190,6 @@ export const experiences: ExperienceItem[] = [
     siteUrl: "https://www.ilmux.com/en",
     logoUrl: "/images/logos/ilmuxlogo.jpg",
   },
-  {
-    id: "aus-education",
-    title: "Bachelor of Science in Computer Science",
-    organization: "American University of Sharjah",
-    period: "Graduated Jun 2025",
-    location: "Sharjah, UAE",
-    summary: "GPA 3.41 with AI, data mining, and neural networks coursework.",
-    details: [
-      "Completed a Bachelor of Science in Computer Science with a GPA of 3.41.",
-      "Coursework included Neural Networks, Artificial Intelligence, Data Mining, and related computer science foundations.",
-    ],
-  },
 ];
 
 export const researchItems: ResearchItem[] = [
@@ -278,7 +266,18 @@ export const researchItems: ResearchItem[] = [
   },
 ];
 
-export const extracurricularItems: ExtracurricularItem[] = [
+export const educationItems: EducationItem[] = [
+  {
+    id: "aus-computer-science",
+    title: "Bachelor of Science in Computer Science",
+    summary: "American University of Sharjah / GPA 3.41 / June 2025.",
+    details: [
+      "Studied computer science with a focus on AI, data science, and software systems.",
+      "Relevant coursework included Neural Networks, Artificial Intelligence, Data Mining, and related computer science foundations.",
+      "Built research and applied engineering work alongside student leadership and technical community organizing.",
+    ],
+    tags: ["aus", "computer-science", "ai"],
+  },
   {
     id: "leadership",
     title: "Tech Leadership",
@@ -300,15 +299,5 @@ export const extracurricularItems: ExtracurricularItem[] = [
       "2nd place in the ADU STEM Programming Contest in 2022.",
     ],
     tags: ["awards", "contests", "aus"],
-  },
-  {
-    id: "education-focus",
-    title: "Education Focus",
-    summary: "AI, data science, software development, and student leadership.",
-    details: [
-      "Built a foundation in AI, data science, and software development through the AUS Computer Science program.",
-      "Created student spaces intended to encourage innovation, collaboration, and applied technical learning.",
-    ],
-    tags: ["ai", "data-science", "student-life"],
   },
 ];

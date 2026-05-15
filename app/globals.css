@@ -563,6 +563,10 @@ a {
   gap: 0;
 }
 
+.terminal-list-readable {
+  gap: 0.35em;
+}
+
 .terminal-row {
   align-items: start;
   background: transparent;
@@ -577,6 +581,24 @@ a {
   padding: 0;
   text-align: left;
   width: 100%;
+}
+
+.terminal-list-readable .terminal-row {
+  gap: 0 0.9ch;
+  grid-template-columns: 1ch minmax(0, 1fr);
+  min-height: auto;
+}
+
+.terminal-list-readable .row-caret {
+  grid-row: 1 / span 2;
+}
+
+.terminal-list-readable .row-name,
+.terminal-list-readable .row-summary {
+  grid-column: 2;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .terminal-row:hover,
@@ -741,7 +763,9 @@ a {
 
 .detail-links a,
 .profile-actions a {
+  color: var(--terminal-cyan);
   display: inline-flex;
+  font-weight: 800;
   min-height: 1.34em;
   text-decoration: none;
 }
@@ -749,6 +773,11 @@ a {
 .detail-links a:hover,
 .profile-actions a:hover {
   color: var(--terminal-fg);
+}
+
+.detail-links a::before {
+  color: var(--terminal-accent);
+  content: "-> ";
 }
 
 .profile-actions .profile-action-resume {
