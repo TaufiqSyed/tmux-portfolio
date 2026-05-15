@@ -59,7 +59,6 @@ const settingsStorageKey = "taufiq-portfolio-terminal-settings-v2";
 
 const terminalThemes: SelectOption[] = [
   { id: "dracula", label: "Dracula" },
-  { id: "one-dark-pro", label: "One Dark Pro" },
   { id: "tokyo-night", label: "Tokyo Night" },
   { id: "catppuccin-mocha", label: "Catppuccin Mocha" },
   { id: "gruvbox", label: "Gruvbox" },
@@ -613,9 +612,9 @@ function ExperienceList({
 }
 
 export default function Home() {
-  const [terminalSettings, setTerminalSettings] = useState(
-    getInitialTerminalSettings,
-  );
+  const [terminalSettings, setTerminalSettings] =
+    useState<TerminalSettings>(defaultTerminalSettings);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [selectedProject, setSelectedProject] = useState(projects[0].id);
   const [selectedExperience, setSelectedExperience] = useState(
     experiences[0].id,
@@ -666,13 +665,6 @@ export default function Home() {
   );
 
   useEffect(() => {
-    window.localStorage.setItem(
-      settingsStorageKey,
-      JSON.stringify(terminalSettings),
-    );
-  }, [terminalSettings]);
-
-  useEffect(() => {
     let cancelled = false;
 
     fetch("/ascii/profile.ansi")
@@ -697,6 +689,34 @@ export default function Home() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    window.queueMicrotask(() => {
+      if (cancelled) {
+        return;
+      }
+
+      setTerminalSettings(getInitialTerminalSettings());
+      setSettingsLoaded(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!settingsLoaded) {
+      return;
+    }
+
+    window.localStorage.setItem(
+      settingsStorageKey,
+      JSON.stringify(terminalSettings),
+    );
+  }, [settingsLoaded, terminalSettings]);
 
   useEffect(() => {
     const audio = audioRef.current;

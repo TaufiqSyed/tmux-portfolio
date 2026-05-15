@@ -79,23 +79,6 @@ a {
   isolation: isolate;
 }
 
-.portfolio-shell[data-theme="one-dark-pro"] {
-  --terminal-bg: #282c34;
-  --terminal-bg-rgb: 40, 44, 52;
-  --terminal-fg: #abb2bf;
-  --terminal-dim: #6f7785;
-  --terminal-border: #3e4451;
-  --terminal-active: #61afef;
-  --terminal-accent: #98c379;
-  --terminal-cyan: #56b6c2;
-  --terminal-yellow: #e5c07b;
-  --terminal-gradient-start: #61afef;
-  --terminal-gradient-mid: #c678dd;
-  --terminal-gradient-end: #98c379;
-  --terminal-muted-surface: rgba(62, 68, 81, 0.14);
-  --terminal-selected: rgba(62, 68, 81, 0.24);
-}
-
 .portfolio-shell[data-theme="tokyo-night"] {
   --terminal-bg: #1a1b26;
   --terminal-bg-rgb: 26, 27, 38;
@@ -387,7 +370,7 @@ a {
   color: var(--terminal-fg);
   align-self: center;
   flex: 0 0 auto;
-  font-size: calc(var(--terminal-font-size) * 0.36);
+  font-size: calc(var(--terminal-font-size) * 0.5445);
   line-height: 0.6;
   margin: -1.25em auto -0.9em;
   max-height: none;
