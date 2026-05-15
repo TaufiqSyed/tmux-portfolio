@@ -168,7 +168,7 @@ a {
 }
 
 .background-scrim {
-  background: transparent;
+  background: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
   z-index: 1;
 }
 
@@ -232,7 +232,7 @@ a {
 .tmux-pane {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  background-color: transparent;
   border-right: 1px solid var(--terminal-border);
   color: var(--terminal-fg);
   display: flex;
@@ -252,7 +252,7 @@ a {
 }
 
 .tmux-pane.is-active {
-  background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  background-color: transparent;
 }
 
 .tmux-pane:not(.is-active) .pane-body {
@@ -300,7 +300,7 @@ a {
 .pane-zoom-toggle {
   align-items: center;
   appearance: none;
-  background: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  background: transparent;
   border: 0;
   color: inherit;
   cursor: pointer;
@@ -768,7 +768,7 @@ a {
 
 .tmux-statusbar {
   align-items: center;
-  background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  background-color: transparent;
   border-top: 1px solid var(--terminal-border);
   color: var(--terminal-fg);
   display: grid;
@@ -820,20 +820,26 @@ a {
 }
 
 @media (max-width: 900px) {
+  html,
   body {
     overflow: auto;
   }
 
   .portfolio-shell {
     align-items: stretch;
+    display: block;
     min-height: 100svh;
-    overflow: auto;
+    overflow: visible;
     --terminal-scale: 1;
   }
 
   .tmux-window {
+    display: block;
     height: auto;
     min-height: 100svh;
+    overflow: visible;
+    position: relative;
+    transform: none;
     width: 100%;
   }
 
