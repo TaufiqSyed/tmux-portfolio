@@ -688,11 +688,21 @@ function ProjectList({
 
       <article className="detail-output">
         <div className="detail-media" aria-label={`${selected.name} preview`}>
-          <div className="terminal-preview">
-            <span />
-            <span />
-            <span />
-          </div>
+          {selected.imageUrl ? (
+            <Image
+              alt={`${selected.name} preview`}
+              height={540}
+              src={selected.imageUrl}
+              style={{ objectPosition: selected.imagePosition ?? "center" }}
+              width={960}
+            />
+          ) : (
+            <div className="terminal-preview">
+              <span />
+              <span />
+              <span />
+            </div>
+          )}
         </div>
         <p className="detail-kicker">{selected.institution}</p>
         <h3>{selected.name}</h3>

@@ -15,6 +15,8 @@ export type ProjectItem = {
   institution: string;
   summary: string;
   bullets: string[];
+  imagePosition?: string;
+  imageUrl?: string;
   metrics?: string;
   repoUrl?: string;
   liveUrl?: string;
@@ -78,6 +80,7 @@ export const projects: ProjectItem[] = [
       "Processed a music dataset into music-prompt pairs with extracted structural information.",
       "Finetuned the MusicGen transformer using a LoRA adaptor.",
     ],
+    imageUrl: "/images/projects/music-structures.png",
     metrics: "CLAP LAION FAD: 0.9959; Overall Quality: 70.48/100",
     tags: ["musicgen", "lora", "ml"],
   },
@@ -89,6 +92,7 @@ export const projects: ProjectItem[] = [
     bullets: [
       "Processed a 12-class garbage classification dataset using CNN feature extraction with TensorFlow and scikit-learn.",
     ],
+    imageUrl: "/images/projects/waste-classification.png",
     metrics: "MobileNetV2 Accuracy: 0.93; Weighted F1: 0.93",
     tags: ["tensorflow", "cnn", "classification"],
   },
@@ -101,6 +105,7 @@ export const projects: ProjectItem[] = [
       "Used balanced data mining approaches including LDA, SMOTE, and Balanced Random Forest.",
       "Achieved competitive results on a highly imbalanced dataset.",
     ],
+    imageUrl: "/images/projects/fraud-detection.png",
     metrics: "Recall: 0.79; AUC: 0.88",
     tags: ["data-mining", "smote", "fraud"],
   },
@@ -113,6 +118,7 @@ export const projects: ProjectItem[] = [
       "Utilized Flutter for cross-platform mobile application development.",
       "Integrated a Node.js backend, configured notifications, and implemented offline caching.",
     ],
+    imageUrl: "/images/projects/attendance-event-app.png",
     tags: ["flutter", "node", "events"],
   },
   {
@@ -124,6 +130,7 @@ export const projects: ProjectItem[] = [
       "Used React and Next.js to build a front-end clone of Reddit.",
       "Created a Node.js and Express backend with PostgreSQL and JWT authentication.",
     ],
+    imageUrl: "/images/projects/reddit-clone.png",
     repoUrl: "https://github.com/TaufiqSyed/reddit-clone/",
     tags: ["next", "express", "postgres"],
   },
@@ -136,6 +143,8 @@ export const projects: ProjectItem[] = [
       "Built a restaurant management system using React, Next.js, and Django.",
       "Implemented user authentication and management features.",
     ],
+    imageUrl: "/images/projects/restaurant-management.png",
+    imagePosition: "left center",
     repoUrl: "https://github.com/TaufiqSyed/restaurant-app",
     tags: ["next", "django", "auth"],
   },

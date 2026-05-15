@@ -763,21 +763,29 @@ a {
 
 .detail-links a,
 .profile-actions a {
+  align-items: center;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 72%, transparent);
   color: var(--terminal-cyan);
   display: inline-flex;
+  gap: 0.8ch;
   font-weight: 800;
   min-height: 1.34em;
+  padding: 0.22em 0.65em;
   text-decoration: none;
+}
+
+.detail-links a {
+  color: var(--terminal-action-resume);
+  min-width: 12ch;
 }
 
 .detail-links a:hover,
 .profile-actions a:hover {
+  background: color-mix(in srgb, currentColor 16%, transparent);
   color: var(--terminal-fg);
-}
-
-.detail-links a::before {
-  color: var(--terminal-accent);
-  content: "-> ";
+  outline: 1px solid currentColor;
+  outline-offset: -2px;
 }
 
 .profile-actions .profile-action-resume {
@@ -820,12 +828,7 @@ a {
 }
 
 .profile-action {
-  align-items: center;
-  background: var(--terminal-muted-surface);
-  border: 1px solid currentColor;
-  gap: 1.15ch;
   min-width: 10.5ch;
-  padding: 0.3em 0.75em;
 }
 
 .profile-action-resume {
@@ -844,8 +847,6 @@ a {
 .profile-action:hover,
 .profile-action:focus-visible {
   background: var(--terminal-selected);
-  outline: 1px solid currentColor;
-  outline-offset: -2px;
 }
 
 .terminal-note {
