@@ -694,10 +694,8 @@ a {
 
 .detail-links a,
 .about-actions a {
-  border: 0;
   display: inline-flex;
   min-height: 1.34em;
-  padding: 0;
   text-decoration: none;
 }
 
@@ -731,7 +729,36 @@ a {
 .about-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 2ch;
+  gap: 1ch;
+}
+
+.profile-action {
+  align-items: center;
+  background: var(--terminal-muted-surface);
+  border: 1px solid currentColor;
+  gap: 1.15ch;
+  min-width: 10.5ch;
+  padding: 0.3em 0.75em;
+}
+
+.profile-action-resume {
+  min-width: 18ch;
+}
+
+.profile-action-icon {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 1.8ch;
+  font-size: 1.3em;
+  justify-content: center;
+  line-height: 1;
+}
+
+.profile-action:hover,
+.profile-action:focus-visible {
+  background: var(--terminal-selected);
+  outline: 1px solid currentColor;
+  outline-offset: -2px;
 }
 
 .terminal-note {

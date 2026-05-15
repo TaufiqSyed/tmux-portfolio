@@ -990,7 +990,7 @@ export default function Home() {
           <div className="tmux-row tmux-row-top">
             <TmuxPane
               activePane={activePane}
-              command="cat ~/Portfolio/profile.ansi"
+              command="~/Portfolio/bin/profile --render --controls"
               id="profile"
               isZoomed={zoomedPane === "profile"}
               onToggleZoom={togglePaneZoom}
@@ -1048,7 +1048,7 @@ export default function Home() {
             <TmuxPane
               activePane={activePane}
               asciiTitle={paneAsciiTitles.projects}
-              command="ls ~/Portfolio/project-list"
+              command="~/Portfolio/bin/projects --interactive"
               id="projects"
               isZoomed={zoomedPane === "projects"}
               onToggleZoom={togglePaneZoom}
@@ -1065,7 +1065,7 @@ export default function Home() {
             <TmuxPane
               activePane={activePane}
               asciiTitle={paneAsciiTitles.background}
-              command="cat ~/Portfolio/experience.log"
+              command="~/Portfolio/bin/background --interactive"
               id="background"
               isZoomed={zoomedPane === "background"}
               onToggleZoom={togglePaneZoom}
@@ -1084,7 +1084,7 @@ export default function Home() {
             <TmuxPane
               activePane={activePane}
               asciiTitle={paneAsciiTitles.research}
-              command='grep -R "research" ~/Portfolio'
+              command="~/Portfolio/bin/research --interactive"
               id="research"
               isZoomed={zoomedPane === "research"}
               onToggleZoom={togglePaneZoom}
@@ -1101,7 +1101,7 @@ export default function Home() {
             <TmuxPane
               activePane={activePane}
               asciiTitle={paneAsciiTitles.about}
-              command="cat ~/Portfolio/about.md"
+              command="~/Portfolio/bin/about --links"
               id="about"
               isZoomed={zoomedPane === "about"}
               onToggleZoom={togglePaneZoom}
@@ -1120,13 +1120,19 @@ export default function Home() {
                     download
                     href="/resume/Taufiq-Syed-Resume.txt"
                   >
-                    download resume
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>download resume</span>
                   </a>
                   <a
                     className="profile-action profile-action-email"
                     href="mailto:hello@example.com"
                   >
-                    email
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>email</span>
                   </a>
                   <a
                     className="profile-action profile-action-github"
@@ -1134,7 +1140,10 @@ export default function Home() {
                     rel="noreferrer"
                     target="_blank"
                   >
-                    github
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>github</span>
                   </a>
                   <a
                     className="profile-action profile-action-linkedin"
@@ -1142,7 +1151,10 @@ export default function Home() {
                     rel="noreferrer"
                     target="_blank"
                   >
-                    linkedin
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>linkedin</span>
                   </a>
                 </div>
                 <div className="terminal-note">
