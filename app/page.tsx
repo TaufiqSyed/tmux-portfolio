@@ -72,9 +72,7 @@ const terminalThemes: SelectOption[] = [
 
 const videoOptions: MediaOption[] = [
   { id: "blue", label: "Blue", src: "/videos/blue.mp4" },
-  { id: "signal", label: "Signal", src: "/videos/signal-grid.mp4" },
   { id: "aurora", label: "Aurora", src: "/videos/aurora-drift.mp4" },
-  { id: "noir", label: "Noir", src: "/videos/noir-scan.mp4" },
 ];
 
 const musicOptions: MediaOption[] = [
@@ -241,6 +239,33 @@ const nameAscii = String.raw`
   | |/ ___ \| |_| |  _|  | | |_| |  ___) || | | |___| |_| |
   |_/_/   \_\\___/|_|   |___\__\_\ |____/ |_| |_____|____/
 `;
+
+const paneAsciiTitles: Record<string, string> = {
+  about: [
+    "   _   ___  ___  _   _ _____",
+    "  /_\\ | _ )/ _ \\| | | |_   _|",
+    " / _ \\| _ \\ (_) | |_| | | |",
+    "/_/ \\_\\___/\\___/ \\___/  |_|",
+  ].join("\n"),
+  background: [
+    " ___   _   ___ _  _____ ___ ___  ___  _   _ _  _ ___",
+    "| _ ) /_\\ / __| |/ / __| _ \\ _ \\/ _ \\| | | | \\| |   \\",
+    "| _ \\/ _ \\ (__| ' < (_ |   /   / (_) | |_| | .` | |) |",
+    "|___/_/ \\_\\___|_|\\_\\___|_|_\\_|_\\\\___/ \\___/|_|\\_|___/",
+  ].join("\n"),
+  projects: [
+    " ___ ___  ___      _ ___ ___ _____ ___",
+    "| _ \\ _ \\/ _ \\  _ | | __/ __|_   _/ __|",
+    "|  _/   / (_) || || | _| (__  | | \\__ \\",
+    "|_| |_|_\\\\___/  \\__/|___\\___| |_| |___/",
+  ].join("\n"),
+  research: [
+    " ___ ___ ___ ___   _   ___  ___ _  _",
+    "| _ \\ __/ __| __| /_\\ | _ \\/ __| || |",
+    "|   / _|\\__ \\ _| / _ \\|   / (__| __ |",
+    "|_|_\\___|___/___/_/ \\_\\_|_\\\\___|_||_|",
+  ].join("\n"),
+};
 
 const ansiPalette: Record<number, string> = {
   30: "#0b0f0c",
@@ -578,6 +603,7 @@ function TmuxPane({
   title,
   command,
   activePane,
+  asciiTitle,
   isZoomed,
   onToggleZoom,
   setActivePane,
@@ -587,6 +613,7 @@ function TmuxPane({
   title: string;
   command: string;
   activePane: string;
+  asciiTitle?: string;
   isZoomed: boolean;
   onToggleZoom: (pane: string) => void;
   setActivePane: (pane: string) => void;
@@ -620,6 +647,11 @@ function TmuxPane({
       </div>
       <div className="pane-body">
         <CommandLine command={command} />
+        {asciiTitle ? (
+          <pre className="pane-ascii-title" aria-label={title}>
+            {asciiTitle.replace(/^\n/, "").replace(/\n$/, "")}
+          </pre>
+        ) : null}
         <div className="terminal-output">{children}</div>
       </div>
     </section>
@@ -1015,6 +1047,7 @@ export default function Home() {
 
             <TmuxPane
               activePane={activePane}
+              asciiTitle={paneAsciiTitles.projects}
               command="ls ~/Portfolio/project-list"
               id="projects"
               isZoomed={zoomedPane === "projects"}
@@ -1031,6 +1064,7 @@ export default function Home() {
 
             <TmuxPane
               activePane={activePane}
+              asciiTitle={paneAsciiTitles.background}
               command="cat ~/Portfolio/experience.log"
               id="background"
               isZoomed={zoomedPane === "background"}
@@ -1049,6 +1083,7 @@ export default function Home() {
           <div className="tmux-row tmux-row-bottom">
             <TmuxPane
               activePane={activePane}
+              asciiTitle={paneAsciiTitles.research}
               command='grep -R "research" ~/Portfolio'
               id="research"
               isZoomed={zoomedPane === "research"}
@@ -1065,6 +1100,7 @@ export default function Home() {
 
             <TmuxPane
               activePane={activePane}
+              asciiTitle={paneAsciiTitles.about}
               command="cat ~/Portfolio/about.md"
               id="about"
               isZoomed={zoomedPane === "about"}
@@ -1079,14 +1115,29 @@ export default function Home() {
                   resume links can replace this placeholder.
                 </p>
                 <div className="about-actions">
-                  <a download href="/resume/Taufiq-Syed-Resume.txt">
+                  <a
+                    className="profile-action profile-action-resume"
+                    download
+                    href="/resume/Taufiq-Syed-Resume.txt"
+                  >
                     download resume
                   </a>
-                  <a href="mailto:hello@example.com">email</a>
-                  <a href="https://github.com/" rel="noreferrer" target="_blank">
+                  <a
+                    className="profile-action profile-action-email"
+                    href="mailto:hello@example.com"
+                  >
+                    email
+                  </a>
+                  <a
+                    className="profile-action profile-action-github"
+                    href="https://github.com/"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
                     github
                   </a>
                   <a
+                    className="profile-action profile-action-linkedin"
                     href="https://www.linkedin.com/"
                     rel="noreferrer"
                     target="_blank"
