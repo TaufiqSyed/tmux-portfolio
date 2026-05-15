@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #282a36;
-  --foreground: #f8f8f2;
+  --background: #1a1b26;
+  --foreground: #a9b1d6;
   --font-terminal: "JetBrainsMono Nerd Font Mono", "JetBrainsMono Nerd Font",
     "JetBrainsMonoNL Nerd Font Mono", "JetBrainsMonoNL Nerd Font",
     var(--font-jetbrains-mono), "JetBrains Mono", "SFMono-Regular", Consolas,
@@ -51,22 +51,21 @@ a {
   --terminal-font-size: 10.8px;
   --terminal-line-height: 1.34;
   --terminal-scale: 1;
-  --terminal-bg: #282a36;
-  --terminal-bg-rgb: 40, 42, 54;
-  --terminal-pane-blur: 8px;
+  --terminal-bg: #1a1b26;
+  --terminal-bg-rgb: 26, 27, 38;
   --terminal-pane-opacity: 0.85;
-  --terminal-fg: #f8f8f2;
-  --terminal-dim: #8f93a6;
-  --terminal-border: #44475a;
-  --terminal-active: #bd93f9;
-  --terminal-accent: #50fa7b;
-  --terminal-cyan: #8be9fd;
-  --terminal-yellow: #f1fa8c;
-  --terminal-gradient-start: #8be9fd;
-  --terminal-gradient-mid: #bd93f9;
-  --terminal-gradient-end: #ff79c6;
-  --terminal-muted-surface: rgba(68, 71, 90, 0.14);
-  --terminal-selected: rgba(68, 71, 90, 0.24);
+  --terminal-fg: #a9b1d6;
+  --terminal-dim: #565f89;
+  --terminal-border: #414868;
+  --terminal-active: #bb9af7;
+  --terminal-accent: #7aa2f7;
+  --terminal-cyan: #7dcfff;
+  --terminal-yellow: #e0af68;
+  --terminal-gradient-start: #7dcfff;
+  --terminal-gradient-mid: #bb9af7;
+  --terminal-gradient-end: #f7768e;
+  --terminal-muted-surface: rgba(65, 72, 104, 0.14);
+  --terminal-selected: rgba(65, 72, 104, 0.24);
   align-items: center;
   background: transparent;
   color: var(--terminal-fg);
@@ -207,8 +206,8 @@ a {
 }
 
 .tmux-pane {
-  -webkit-backdrop-filter: blur(var(--terminal-pane-blur));
-  backdrop-filter: blur(var(--terminal-pane-blur));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   background-color: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
   border-right: 1px solid var(--terminal-border);
   color: var(--terminal-fg);
@@ -396,6 +395,7 @@ a {
 }
 
 .name-gradient {
+  align-self: center;
   background: linear-gradient(
     90deg,
     var(--terminal-gradient-start),
@@ -404,10 +404,15 @@ a {
   );
   background-clip: text;
   color: transparent;
+  flex: 0 0 auto;
   font-weight: 800;
   letter-spacing: 0;
-  overflow: auto;
+  margin-inline: auto;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: pre;
+  width: max-content;
   -webkit-background-clip: text;
 }
 

@@ -45,7 +45,6 @@ type StoredSettings = Partial<{
   video: string;
   music: string;
   opacity: string;
-  blur: string;
 }>;
 
 type TerminalSettings = {
@@ -53,10 +52,10 @@ type TerminalSettings = {
   video: string;
   music: string;
   opacity: string;
-  blur: string;
 };
 
-const settingsStorageKey = "taufiq-portfolio-terminal-settings";
+const legacySettingsStorageKey = "taufiq-portfolio-terminal-settings";
+const settingsStorageKey = "taufiq-portfolio-terminal-settings-v2";
 
 const terminalThemes: SelectOption[] = [
   { id: "dracula", label: "Dracula" },
@@ -89,12 +88,12 @@ const opacityOptions: SelectOption[] = [
   { id: "1", label: "100%" },
 ];
 
-const blurOptions: SelectOption[] = [
-  { id: "0px", label: "0px" },
-  { id: "4px", label: "4px" },
-  { id: "8px", label: "8px" },
-  { id: "12px", label: "12px" },
-];
+const defaultTerminalSettings: TerminalSettings = {
+  music: "none",
+  opacity: "0.85",
+  theme: "tokyo-night",
+  video: "aurora",
+};
 
 function hasOption(
   options: SelectOption[] | MediaOption[],
@@ -110,6 +109,7 @@ function readStoredSettings(): StoredSettings {
 
   try {
     const stored = window.localStorage.getItem(settingsStorageKey);
+    window.localStorage.removeItem(legacySettingsStorageKey);
     return stored ? (JSON.parse(stored) as StoredSettings) : {};
   } catch {
     window.localStorage.removeItem(settingsStorageKey);
@@ -121,19 +121,18 @@ function getInitialTerminalSettings(): TerminalSettings {
   const stored = readStoredSettings();
 
   return {
-    blur: hasOption(blurOptions, stored.blur) ? stored.blur : blurOptions[2].id,
     music: hasOption(musicOptions, stored.music)
       ? stored.music
-      : musicOptions[0].id,
+      : defaultTerminalSettings.music,
     opacity: hasOption(opacityOptions, stored.opacity)
       ? stored.opacity
-      : opacityOptions[2].id,
+      : defaultTerminalSettings.opacity,
     theme: hasOption(terminalThemes, stored.theme)
       ? stored.theme
-      : terminalThemes[0].id,
+      : defaultTerminalSettings.theme,
     video: hasOption(videoOptions, stored.video)
       ? stored.video
-      : videoOptions[0].id,
+      : defaultTerminalSettings.video,
   };
 }
 
@@ -630,7 +629,6 @@ export default function Home() {
   const selectedVideo = terminalSettings.video;
   const selectedMusic = terminalSettings.music;
   const selectedOpacity = terminalSettings.opacity;
-  const selectedBlur = terminalSettings.blur;
 
   const setSelectedTheme = (theme: string) => {
     setTerminalSettings((current) => ({ ...current, theme }));
@@ -648,28 +646,23 @@ export default function Home() {
     setTerminalSettings((current) => ({ ...current, opacity }));
   };
 
-  const setSelectedBlur = (blur: string) => {
-    setTerminalSettings((current) => ({ ...current, blur }));
-  };
-
   const selectedVideoOption =
-    videoOptions.find((option) => option.id === selectedVideo) ?? videoOptions[0];
+    videoOptions.find((option) => option.id === selectedVideo) ??
+    videoOptions.find((option) => option.id === defaultTerminalSettings.video) ??
+    videoOptions[0];
   const selectedMusicOption =
     musicOptions.find((option) => option.id === selectedMusic) ?? musicOptions[0];
   const selectedOpacityOption =
     opacityOptions.find((option) => option.id === selectedOpacity) ??
     opacityOptions[2];
-  const selectedBlurOption =
-    blurOptions.find((option) => option.id === selectedBlur) ?? blurOptions[2];
 
   const portraitTokens = useMemo(() => parseAnsi(portrait), [portrait]);
   const shellStyle = useMemo(
     () =>
       ({
-        "--terminal-pane-blur": selectedBlur,
         "--terminal-pane-opacity": selectedOpacity,
       }) as CSSProperties,
-    [selectedBlur, selectedOpacity],
+    [selectedOpacity],
   );
 
   useEffect(() => {
@@ -769,7 +762,7 @@ export default function Home() {
                   ))}
                 </pre>
                 <pre className="name-gradient" aria-label="TAUFIQ SYED">
-                  {nameAscii}
+                  {nameAscii.replace(/^\n/, "").replace(/\n$/, "")}
                 </pre>
                 <div className="control-stack">
                   <ControlRow
@@ -792,13 +785,6 @@ export default function Home() {
                     onSelect={setSelectedOpacity}
                     options={opacityOptions}
                     selected={selectedOpacity}
-                  />
-                  <ControlRow
-                    icon="BL"
-                    label="blur"
-                    onSelect={setSelectedBlur}
-                    options={blurOptions}
-                    selected={selectedBlur}
                   />
                   <ControlRow
                     icon="AU"
@@ -898,7 +884,7 @@ export default function Home() {
           <span className="status-right">
             theme:{selectedTheme} video:{selectedVideo} audio:
             {selectedMusicOption.label.toLowerCase()} opacity:
-            {selectedOpacityOption.label} blur:{selectedBlurOption.label}
+            {selectedOpacityOption.label}
           </span>
         </footer>
       </div>
