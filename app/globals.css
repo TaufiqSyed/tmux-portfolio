@@ -79,6 +79,23 @@ a {
   isolation: isolate;
 }
 
+.portfolio-shell[data-theme="dracula"] {
+  --terminal-bg: #282a36;
+  --terminal-bg-rgb: 40, 42, 54;
+  --terminal-fg: #f8f8f2;
+  --terminal-dim: #8f93a6;
+  --terminal-border: #44475a;
+  --terminal-active: #bd93f9;
+  --terminal-accent: #50fa7b;
+  --terminal-cyan: #8be9fd;
+  --terminal-yellow: #f1fa8c;
+  --terminal-gradient-start: #8be9fd;
+  --terminal-gradient-mid: #bd93f9;
+  --terminal-gradient-end: #ff79c6;
+  --terminal-muted-surface: rgba(68, 71, 90, 0.14);
+  --terminal-selected: rgba(68, 71, 90, 0.24);
+}
+
 .portfolio-shell[data-theme="tokyo-night"] {
   --terminal-bg: #1a1b26;
   --terminal-bg-rgb: 26, 27, 38;

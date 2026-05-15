@@ -54,6 +54,12 @@ type TerminalSettings = {
   opacity: string;
 };
 
+type Rgb = {
+  red: number;
+  green: number;
+  blue: number;
+};
+
 const legacySettingsStorageKey = "taufiq-portfolio-terminal-settings";
 const settingsStorageKey = "taufiq-portfolio-terminal-settings-v2";
 
@@ -294,6 +300,165 @@ function colorFromAnsi256(value: number) {
   return `rgb(${gray}, ${gray}, ${gray})`;
 }
 
+function luminance(red: number, green: number, blue: number) {
+  return red * 0.2126 + green * 0.7152 + blue * 0.0722;
+}
+
+function isPortraitSkinTone(red: number, green: number, blue: number) {
+  return (
+    red > 105 &&
+    green > 55 &&
+    blue > 28 &&
+    red > green &&
+    green > blue &&
+    red - blue > 40
+  );
+}
+
+function isPortraitShirtTone(red: number, green: number, blue: number) {
+  const lightness = luminance(red, green, blue);
+
+  return (
+    red < 115 &&
+    green < 145 &&
+    blue > red + 10 &&
+    blue >= green - 8 &&
+    lightness > 28 &&
+    lightness < 165
+  );
+}
+
+function hexToRgb(hex: string): Rgb {
+  const value = hex.replace("#", "");
+
+  return {
+    blue: Number.parseInt(value.slice(4, 6), 16),
+    green: Number.parseInt(value.slice(2, 4), 16),
+    red: Number.parseInt(value.slice(0, 2), 16),
+  };
+}
+
+function mixColor(original: Rgb, tint: Rgb, originalWeight: number) {
+  const tintWeight = 1 - originalWeight;
+  const red = Math.round(original.red * originalWeight + tint.red * tintWeight);
+  const green = Math.round(
+    original.green * originalWeight + tint.green * tintWeight,
+  );
+  const blue = Math.round(
+    original.blue * originalWeight + tint.blue * tintWeight,
+  );
+
+  return `rgb(${red}, ${green}, ${blue})`;
+}
+
+function rgbString(color: Rgb) {
+  return `rgb(${color.red}, ${color.green}, ${color.blue})`;
+}
+
+const portraitThemeTints: Record<
+  string,
+  {
+    coolShadow: Rgb;
+    neutral: Rgb;
+    outline: Rgb;
+    shirtHighlight: Rgb;
+    shirtMid: Rgb;
+    shirtShadow: Rgb;
+    skinHighlight: Rgb;
+    skinMid: Rgb;
+    skinShadow: Rgb;
+  }
+> = {
+  "catppuccin-mocha": {
+    coolShadow: hexToRgb("#89b4fa"),
+    neutral: hexToRgb("#89dceb"),
+    outline: hexToRgb("#45475a"),
+    shirtHighlight: hexToRgb("#89dceb"),
+    shirtMid: hexToRgb("#89b4fa"),
+    shirtShadow: hexToRgb("#313244"),
+    skinHighlight: hexToRgb("#f9e2af"),
+    skinMid: hexToRgb("#a6e3a1"),
+    skinShadow: hexToRgb("#89b4fa"),
+  },
+  dracula: {
+    coolShadow: hexToRgb("#bd93f9"),
+    neutral: hexToRgb("#8be9fd"),
+    outline: hexToRgb("#44475a"),
+    shirtHighlight: hexToRgb("#8be9fd"),
+    shirtMid: hexToRgb("#6272a4"),
+    shirtShadow: hexToRgb("#44475a"),
+    skinHighlight: hexToRgb("#f1fa8c"),
+    skinMid: hexToRgb("#50fa7b"),
+    skinShadow: hexToRgb("#bd93f9"),
+  },
+  gruvbox: {
+    coolShadow: hexToRgb("#fabd2f"),
+    neutral: hexToRgb("#83a598"),
+    outline: hexToRgb("#504945"),
+    shirtHighlight: hexToRgb("#83a598"),
+    shirtMid: hexToRgb("#458588"),
+    shirtShadow: hexToRgb("#3c3836"),
+    skinHighlight: hexToRgb("#fabd2f"),
+    skinMid: hexToRgb("#b8bb26"),
+    skinShadow: hexToRgb("#d3869b"),
+  },
+  "tokyo-night": {
+    coolShadow: hexToRgb("#bb9af7"),
+    neutral: hexToRgb("#7dcfff"),
+    outline: hexToRgb("#414868"),
+    shirtHighlight: hexToRgb("#7dcfff"),
+    shirtMid: hexToRgb("#7aa2f7"),
+    shirtShadow: hexToRgb("#292e42"),
+    skinHighlight: hexToRgb("#e0af68"),
+    skinMid: hexToRgb("#7aa2f7"),
+    skinShadow: hexToRgb("#bb9af7"),
+  },
+};
+
+function themedPortraitColor(
+  red: number,
+  green: number,
+  blue: number,
+  theme: string,
+) {
+  const original = { blue, green, red };
+  const lightness = luminance(red, green, blue);
+  const tints = portraitThemeTints[theme] ?? portraitThemeTints["tokyo-night"];
+
+  if (isPortraitSkinTone(red, green, blue)) {
+    if (lightness > 205) {
+      return mixColor(original, tints.skinHighlight, 0.92);
+    }
+
+    if (lightness > 145) {
+      return mixColor(original, tints.skinMid, 0.9);
+    }
+
+    return mixColor(original, tints.skinShadow, 0.88);
+  }
+
+  if (isPortraitShirtTone(red, green, blue)) {
+    if (lightness > 115) {
+      return rgbString(tints.shirtHighlight);
+    }
+
+    if (lightness > 62) {
+      return rgbString(tints.shirtMid);
+    }
+
+    return rgbString(tints.shirtShadow);
+  }
+
+  if (lightness < 48) {
+    const tint = blue > red + 14 ? tints.coolShadow : tints.outline;
+    const originalWeight = lightness < 28 ? 0.76 : 0.82;
+
+    return mixColor(original, tint, originalWeight);
+  }
+
+  return mixColor(original, tints.neutral, 0.9);
+}
+
 function backgroundColorFromAnsiCode(code: number) {
   if (code >= 40 && code <= 47) {
     return ansiPalette[code - 10];
@@ -306,7 +471,7 @@ function backgroundColorFromAnsiCode(code: number) {
   return undefined;
 }
 
-function parseAnsi(input: string): AnsiToken[] {
+function parseAnsi(input: string, theme: string): AnsiToken[] {
   const tokens: AnsiToken[] = [];
   const matcher = /\x1b\[([0-9;]*)m/g;
   let cursor = 0;
@@ -368,7 +533,7 @@ function parseAnsi(input: string): AnsiToken[] {
         index += 2;
       } else if (code === 38 && codes[index + 1] === 2) {
         const [red, green, blue] = codes.slice(index + 2, index + 5);
-        style = { ...style, color: `rgb(${red}, ${green}, ${blue})` };
+        style = { ...style, color: themedPortraitColor(red, green, blue, theme) };
         index += 4;
       } else if (code === 48 && codes[index + 1] === 5) {
         style = {
@@ -380,7 +545,7 @@ function parseAnsi(input: string): AnsiToken[] {
         const [red, green, blue] = codes.slice(index + 2, index + 5);
         style = {
           ...style,
-          backgroundColor: `rgb(${red}, ${green}, ${blue})`,
+          backgroundColor: themedPortraitColor(red, green, blue, theme),
         };
         index += 4;
       }
@@ -655,7 +820,10 @@ export default function Home() {
     opacityOptions.find((option) => option.id === selectedOpacity) ??
     opacityOptions[2];
 
-  const portraitTokens = useMemo(() => parseAnsi(portrait), [portrait]);
+  const portraitTokens = useMemo(
+    () => parseAnsi(portrait, selectedTheme),
+    [portrait, selectedTheme],
+  );
   const shellStyle = useMemo(
     () =>
       ({
