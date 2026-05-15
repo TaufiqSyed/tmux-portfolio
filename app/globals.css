@@ -374,8 +374,9 @@ a {
 .row-caret,
 .row-name,
 .detail-period,
+.detail-kicker,
 .detail-links a,
-.about-actions a,
+.profile-actions a,
 .terminal-note,
 .option-token.is-selected,
 .prompt-muted:last-of-type {
@@ -518,6 +519,7 @@ a {
 .control-label,
 .row-summary,
 .tag-line span,
+.detail-meta,
 .detail-output h3 span {
   color: var(--terminal-dim);
 }
@@ -609,7 +611,7 @@ a {
 
 .detail-output h3,
 .detail-output p,
-.about-output p {
+.terminal-bullets {
   color: var(--terminal-fg);
   font-size: var(--terminal-font-size);
   line-height: var(--terminal-line-height);
@@ -622,6 +624,51 @@ a {
 
 .detail-output p {
   grid-column: 2;
+}
+
+.detail-kicker,
+.terminal-bullets {
+  grid-column: 2;
+}
+
+.detail-output .detail-kicker {
+  color: var(--terminal-accent);
+}
+
+.detail-output .detail-meta {
+  color: var(--terminal-dim);
+}
+
+.detail-meta span {
+  color: var(--terminal-accent);
+}
+
+.terminal-bullets {
+  display: grid;
+  gap: 0.25em;
+  grid-column: 2;
+  list-style: none;
+  padding: 0;
+}
+
+.terminal-bullets li::before {
+  color: var(--terminal-accent);
+  content: "- ";
+}
+
+.detail-heading {
+  align-items: center;
+  display: flex;
+  gap: 1ch;
+}
+
+.detail-logo {
+  background: var(--terminal-muted-surface);
+  display: block;
+  flex: 0 0 auto;
+  height: 2em;
+  object-fit: contain;
+  width: 2em;
 }
 
 .detail-period {
@@ -693,40 +740,51 @@ a {
 }
 
 .detail-links a,
-.about-actions a {
+.profile-actions a {
   display: inline-flex;
   min-height: 1.34em;
   text-decoration: none;
 }
 
 .detail-links a:hover,
-.about-actions a:hover {
+.profile-actions a:hover {
   color: var(--terminal-fg);
 }
 
-.about-actions .profile-action-resume {
+.profile-actions .profile-action-resume {
   color: var(--terminal-action-resume);
 }
 
-.about-actions .profile-action-email {
+.profile-actions .profile-action-email {
   color: var(--terminal-action-email);
 }
 
-.about-actions .profile-action-github {
+.profile-actions .profile-action-github {
   color: var(--terminal-action-github);
 }
 
-.about-actions .profile-action-linkedin {
+.profile-actions .profile-action-linkedin {
   color: var(--terminal-action-linkedin);
 }
 
-.about-output {
+.profile-meta {
   display: grid;
-  gap: 1em;
-  margin: auto 0;
+  gap: 0.2em;
 }
 
-.about-actions {
+.profile-meta p {
+  color: var(--terminal-fg);
+  font-size: var(--terminal-font-size);
+  line-height: var(--terminal-line-height);
+  margin: 0;
+}
+
+.profile-meta span,
+.profile-meta .profile-headline {
+  color: var(--terminal-accent);
+}
+
+.profile-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 1ch;
@@ -742,7 +800,7 @@ a {
 }
 
 .profile-action-resume {
-  min-width: 18ch;
+  min-width: 12ch;
 }
 
 .profile-action-icon {
@@ -809,6 +867,8 @@ a {
   .detail-media,
   .detail-output h3,
   .detail-output p,
+  .detail-kicker,
+  .terminal-bullets,
   .tag-line,
   .detail-links {
     grid-column: 1;

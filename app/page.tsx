@@ -2,30 +2,21 @@
 
 import Image from "next/image";
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import {
+  experiences,
+  extracurricularItems,
+  profileContent,
+  projects,
+  researchItems,
+  type ExperienceItem,
+  type ExtracurricularItem,
+  type ProjectItem,
+  type ResearchItem,
+} from "./portfolio-content";
 
 type SelectOption = {
   id: string;
   label: string;
-};
-
-type PortfolioItem = {
-  id: string;
-  name: string;
-  summary: string;
-  description: string;
-  image?: string;
-  repoUrl?: string;
-  liveUrl?: string;
-  tags?: string[];
-};
-
-type ExperienceItem = {
-  id: string;
-  title: string;
-  organization: string;
-  period: string;
-  summary: string;
-  description: string;
 };
 
 type MediaOption = {
@@ -139,88 +130,6 @@ function getInitialTerminalSettings(): TerminalSettings {
   };
 }
 
-const projects: PortfolioItem[] = [
-  {
-    id: "project-alpha",
-    name: "project-alpha",
-    summary: "A placeholder project slot for your first featured build.",
-    description:
-      "Replace this with the full project story, technical context, screenshots, and the reason it belongs in the top set.",
-    repoUrl: "https://github.com/",
-    liveUrl: "https://example.com/",
-    tags: ["next", "systems", "ui"],
-  },
-  {
-    id: "project-beta",
-    name: "project-beta",
-    summary: "A second project row with room for a concise one-line result.",
-    description:
-      "This detail area can hold the longer explanation, image, links, stack, and the moment where the work becomes memorable.",
-    repoUrl: "https://github.com/",
-    tags: ["product", "data"],
-  },
-  {
-    id: "project-gamma",
-    name: "project-gamma",
-    summary: "A third example entry to show the selected-output behavior.",
-    description:
-      "The UI is intentionally data-driven, so your real portfolio items can replace these placeholders without layout changes.",
-    liveUrl: "https://example.com/",
-    tags: ["prototype", "research"],
-  },
-];
-
-const experiences: ExperienceItem[] = [
-  {
-    id: "current-role",
-    title: "Current Role",
-    organization: "Company / Lab",
-    period: "2026",
-    summary: "Short role summary, impact, or domain.",
-    description:
-      "Add your real work history here: scope, responsibilities, outcomes, tools, and the sharpest proof of impact.",
-  },
-  {
-    id: "previous-role",
-    title: "Previous Role",
-    organization: "Organization",
-    period: "2024 - 2025",
-    summary: "A compact line for the list view.",
-    description:
-      "Use this selected detail view for expanded role context, achievements, and links if needed.",
-  },
-  {
-    id: "education",
-    title: "Education",
-    organization: "University / Program",
-    period: "Year",
-    summary: "Degree, concentration, or focus area.",
-    description:
-      "Education can live beside experience here, keeping the whole pane scannable and terminal-like.",
-  },
-];
-
-const researchItems: PortfolioItem[] = [
-  {
-    id: "research-one",
-    name: "research-note-001",
-    summary: "A research placeholder for papers, experiments, or essays.",
-    description:
-      "Use this pane for deeper technical notes, publications, experiments, benchmarks, or reading-driven work.",
-    liveUrl: "https://example.com/",
-    tags: ["paper", "ml", "notes"],
-  },
-  {
-    id: "research-two",
-    name: "research-note-002",
-    summary: "Another row showing how research items expand on click.",
-    description:
-      "Selected research can reveal an image, abstract, status, repo, PDF, or external link depending on what you provide.",
-    repoUrl: "https://github.com/",
-    tags: ["systems", "analysis"],
-  },
-];
-
 const fallbackPortrait = String.raw`
         .----------------.
        /  .----------.   \
@@ -241,11 +150,11 @@ const nameAscii = String.raw`
 `;
 
 const paneAsciiTitles: Record<string, string> = {
-  about: [
-    "   _   ___  ___  _   _ _____",
-    "  /_\\ | _ )/ _ \\| | | |_   _|",
-    " / _ \\| _ \\ (_) | |_| | | |",
-    "/_/ \\_\\___/\\___/ \\___/  |_|",
+  extracurriculars: [
+    " _____  _______ ___    _   ___",
+    "| __\\ \\/ /_   _| _ \\  /_\\ / __|",
+    "| _| >  <  | | |   / / _ \\\\__ \\",
+    "|___/_/\\_\\ |_| |_|_\\/_/ \\_\\___/",
   ].join("\n"),
   background: [
     " ___   _   ___ _  _____ ___ ___  ___  _   _ _  _ ___",
@@ -698,19 +607,24 @@ function ControlRow({
   );
 }
 
-function DetailLinks({ item }: { item: PortfolioItem }) {
+function TerminalLinks({
+  links,
+}: {
+  links: { href?: string; label: string }[];
+}) {
+  const visibleLinks = links.filter((link) => link.href);
+
+  if (!visibleLinks.length) {
+    return null;
+  }
+
   return (
     <div className="detail-links">
-      {item.repoUrl ? (
-        <a href={item.repoUrl} rel="noreferrer" target="_blank">
-          git remote
+      {visibleLinks.map((link) => (
+        <a href={link.href} key={link.label} rel="noreferrer" target="_blank">
+          {link.label}
         </a>
-      ) : null}
-      {item.liveUrl ? (
-        <a href={item.liveUrl} rel="noreferrer" target="_blank">
-          open live
-        </a>
-      ) : null}
+      ))}
     </div>
   );
 }
@@ -729,12 +643,22 @@ function Tags({ tags }: { tags?: string[] }) {
   );
 }
 
-function PortfolioList({
+function TerminalBullets({ items }: { items: string[] }) {
+  return (
+    <ul className="terminal-bullets">
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+function ProjectList({
   items,
   selectedId,
   onSelect,
 }: {
-  items: PortfolioItem[];
+  items: ProjectItem[];
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
@@ -764,20 +688,82 @@ function PortfolioList({
 
       <article className="detail-output">
         <div className="detail-media" aria-label={`${selected.name} preview`}>
-          {selected.image ? (
-            <Image alt="" fill sizes="320px" src={selected.image} />
-          ) : (
-            <div className="terminal-preview">
-              <span />
-              <span />
-              <span />
-            </div>
-          )}
+          <div className="terminal-preview">
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
+        <p className="detail-kicker">{selected.institution}</p>
         <h3>{selected.name}</h3>
-        <p>{selected.description}</p>
+        <TerminalBullets items={selected.bullets} />
+        {selected.metrics ? (
+          <p className="detail-meta">
+            <span>metrics:</span> {selected.metrics}
+          </p>
+        ) : null}
         <Tags tags={selected.tags} />
-        <DetailLinks item={selected} />
+        <TerminalLinks
+          links={[
+            { href: selected.repoUrl, label: "git remote" },
+            { href: selected.liveUrl, label: "open live" },
+          ]}
+        />
+      </article>
+    </>
+  );
+}
+
+function ResearchList({
+  items,
+  selectedId,
+  onSelect,
+}: {
+  items: ResearchItem[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const selected = items.find((item) => item.id === selectedId) ?? items[0];
+
+  return (
+    <>
+      <div className="terminal-list" role="list">
+        {items.map((item) => {
+          const isSelected = item.id === selected.id;
+
+          return (
+            <button
+              className={`terminal-row ${isSelected ? "is-selected" : ""}`}
+              key={item.id}
+              onClick={() => onSelect(item.id)}
+              role="listitem"
+              type="button"
+            >
+              <span className="row-caret">{isSelected ? ">" : " "}</span>
+              <span className="row-name">{item.title}</span>
+              <span className="row-summary">{item.summary}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <article className="detail-output compact research-detail">
+        <p className="detail-period">published: {selected.publicationDate}</p>
+        <h3>{selected.title}</h3>
+        <p className="detail-meta">
+          <span>authors:</span> {selected.authors}
+        </p>
+        <p className="detail-meta">
+          <span>venue:</span> {selected.conference} / {selected.conferenceDate}
+        </p>
+        <p>{selected.abstract}</p>
+        <p className="detail-meta">
+          <span>doi:</span> {selected.doi}
+        </p>
+        <Tags tags={selected.tags} />
+        <TerminalLinks
+          links={[{ href: selected.publicationUrl, label: "open publication" }]}
+        />
       </article>
     </>
   );
@@ -819,11 +805,71 @@ function ExperienceList({
       </div>
 
       <article className="detail-output compact">
+        <div className="detail-heading">
+          {selected.logoUrl ? (
+            <Image
+              alt={`${selected.organization} logo`}
+              className="detail-logo"
+              height={32}
+              src={selected.logoUrl}
+              width={32}
+            />
+          ) : null}
+          <h3>
+            {selected.title} <span>@ {selected.organization}</span>
+          </h3>
+        </div>
         <p className="detail-period">{selected.period}</p>
-        <h3>
-          {selected.title} <span>@ {selected.organization}</span>
-        </h3>
-        <p>{selected.description}</p>
+        <p className="detail-meta">
+          <span>location:</span> {selected.location}
+        </p>
+        <TerminalBullets items={selected.details} />
+        <TerminalLinks
+          links={[{ href: selected.siteUrl, label: "open organization" }]}
+        />
+      </article>
+    </>
+  );
+}
+
+function ExtracurricularList({
+  items,
+  selectedId,
+  onSelect,
+}: {
+  items: ExtracurricularItem[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const selected = items.find((item) => item.id === selectedId) ?? items[0];
+
+  return (
+    <>
+      <div className="terminal-list" role="list">
+        {items.map((item) => {
+          const isSelected = item.id === selected.id;
+
+          return (
+            <button
+              className={`terminal-row ${isSelected ? "is-selected" : ""}`}
+              key={item.id}
+              onClick={() => onSelect(item.id)}
+              role="listitem"
+              type="button"
+            >
+              <span className="row-caret">{isSelected ? ">" : " "}</span>
+              <span className="row-name">{item.title}</span>
+              <span className="row-summary">{item.summary}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <article className="detail-output compact">
+        <h3>{selected.title}</h3>
+        <p>{selected.summary}</p>
+        <TerminalBullets items={selected.details} />
+        <Tags tags={selected.tags} />
       </article>
     </>
   );
@@ -838,6 +884,9 @@ export default function Home() {
     experiences[0].id,
   );
   const [selectedResearch, setSelectedResearch] = useState(researchItems[0].id);
+  const [selectedExtracurricular, setSelectedExtracurricular] = useState(
+    extracurricularItems[0].id,
+  );
   const [activePane, setActivePane] = useState("profile");
   const [zoomedPane, setZoomedPane] = useState<string | null>(null);
   const [portrait, setPortrait] = useState(fallbackPortrait);
@@ -1012,6 +1061,57 @@ export default function Home() {
                 <pre className="name-gradient" aria-label="TAUFIQ SYED">
                   {nameAscii.replace(/^\n/, "").replace(/\n$/, "")}
                 </pre>
+                <div className="profile-meta">
+                  <p className="profile-headline">{profileContent.headline}</p>
+                  <p>
+                    <span>based:</span> {profileContent.location}
+                  </p>
+                  <p>{profileContent.summary}</p>
+                </div>
+                <div className="profile-actions">
+                  <a
+                    className="profile-action profile-action-resume"
+                    href={profileContent.resumePath}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>resume</span>
+                  </a>
+                  <a
+                    className="profile-action profile-action-email"
+                    href={`mailto:${profileContent.email}`}
+                  >
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>email</span>
+                  </a>
+                  <a
+                    className="profile-action profile-action-github"
+                    href={profileContent.githubUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>github</span>
+                  </a>
+                  <a
+                    className="profile-action profile-action-linkedin"
+                    href={profileContent.linkedinUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <span className="profile-action-icon" aria-hidden="true">
+                      
+                    </span>
+                    <span>linkedin</span>
+                  </a>
+                </div>
                 <div className="control-stack">
                   <ControlRow
                     icon="TH"
@@ -1055,7 +1155,7 @@ export default function Home() {
               setActivePane={setActivePane}
               title="Projects"
             >
-              <PortfolioList
+              <ProjectList
                 items={projects}
                 onSelect={setSelectedProject}
                 selectedId={selectedProject}
@@ -1091,7 +1191,7 @@ export default function Home() {
               setActivePane={setActivePane}
               title="Research"
             >
-              <PortfolioList
+              <ResearchList
                 items={researchItems}
                 onSelect={setSelectedResearch}
                 selectedId={selectedResearch}
@@ -1100,67 +1200,19 @@ export default function Home() {
 
             <TmuxPane
               activePane={activePane}
-              asciiTitle={paneAsciiTitles.about}
-              command="~/Portfolio/bin/about --links"
-              id="about"
-              isZoomed={zoomedPane === "about"}
+              asciiTitle={paneAsciiTitles.extracurriculars}
+              command="~/Portfolio/bin/extracurriculars --interactive"
+              id="extracurriculars"
+              isZoomed={zoomedPane === "extracurriculars"}
               onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
-              title="About"
+              title="Extras"
             >
-              <div className="about-output">
-                <p>
-                  I build interfaces and systems that feel intentional, tactile,
-                  and a little cinematic. Your final bio, contact details, and
-                  resume links can replace this placeholder.
-                </p>
-                <div className="about-actions">
-                  <a
-                    className="profile-action profile-action-resume"
-                    download
-                    href="/resume/Taufiq-Syed-Resume.txt"
-                  >
-                    <span className="profile-action-icon" aria-hidden="true">
-                      
-                    </span>
-                    <span>download resume</span>
-                  </a>
-                  <a
-                    className="profile-action profile-action-email"
-                    href="mailto:hello@example.com"
-                  >
-                    <span className="profile-action-icon" aria-hidden="true">
-                      
-                    </span>
-                    <span>email</span>
-                  </a>
-                  <a
-                    className="profile-action profile-action-github"
-                    href="https://github.com/"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <span className="profile-action-icon" aria-hidden="true">
-                      
-                    </span>
-                    <span>github</span>
-                  </a>
-                  <a
-                    className="profile-action profile-action-linkedin"
-                    href="https://www.linkedin.com/"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <span className="profile-action-icon" aria-hidden="true">
-                      
-                    </span>
-                    <span>linkedin</span>
-                  </a>
-                </div>
-                <div className="terminal-note">
-                  status: content placeholders ready for swap
-                </div>
-              </div>
+              <ExtracurricularList
+                items={extracurricularItems}
+                onSelect={setSelectedExtracurricular}
+                selectedId={selectedExtracurricular}
+              />
             </TmuxPane>
           </div>
         </div>
