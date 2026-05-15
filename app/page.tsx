@@ -578,6 +578,8 @@ function TmuxPane({
   title,
   command,
   activePane,
+  isZoomed,
+  onToggleZoom,
   setActivePane,
   children,
 }: {
@@ -585,17 +587,36 @@ function TmuxPane({
   title: string;
   command: string;
   activePane: string;
+  isZoomed: boolean;
+  onToggleZoom: (pane: string) => void;
   setActivePane: (pane: string) => void;
   children: React.ReactNode;
 }) {
   return (
     <section
-      className={`tmux-pane ${activePane === id ? "is-active" : ""}`}
+      className={`tmux-pane ${activePane === id ? "is-active" : ""} ${
+        isZoomed ? "is-zoomed" : ""
+      }`}
       onPointerDown={() => setActivePane(id)}
       aria-label={title}
     >
       <div className="pane-titlebar">
         <span>{title}</span>
+        <button
+          aria-label={isZoomed ? `Unzoom ${title} pane` : `Zoom ${title} pane`}
+          aria-pressed={isZoomed}
+          className="pane-zoom-toggle"
+          onClick={(event) => {
+            event.stopPropagation();
+            setActivePane(id);
+            onToggleZoom(id);
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+          title={isZoomed ? "unzoom pane" : "zoom pane"}
+          type="button"
+        >
+          {isZoomed ? "[-]" : "[+]"}
+        </button>
       </div>
       <div className="pane-body">
         <CommandLine command={command} />
@@ -786,6 +807,7 @@ export default function Home() {
   );
   const [selectedResearch, setSelectedResearch] = useState(researchItems[0].id);
   const [activePane, setActivePane] = useState("profile");
+  const [zoomedPane, setZoomedPane] = useState<string | null>(null);
   const [portrait, setPortrait] = useState(fallbackPortrait);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -808,6 +830,10 @@ export default function Home() {
 
   const setSelectedOpacity = (opacity: string) => {
     setTerminalSettings((current) => ({ ...current, opacity }));
+  };
+
+  const togglePaneZoom = (pane: string) => {
+    setZoomedPane((current) => (current === pane ? null : pane));
   };
 
   const selectedVideoOption =
@@ -928,12 +954,14 @@ export default function Home() {
       <div className="background-scrim" aria-hidden="true" />
 
       <div className="tmux-window" aria-label="Taufiq Syed tmux portfolio">
-        <div className="tmux-grid">
+        <div className={`tmux-grid ${zoomedPane ? "is-zoomed" : ""}`}>
           <div className="tmux-row tmux-row-top">
             <TmuxPane
               activePane={activePane}
               command="cat ~/Portfolio/profile.ansi"
               id="profile"
+              isZoomed={zoomedPane === "profile"}
+              onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
               title="Profile"
             >
@@ -989,6 +1017,8 @@ export default function Home() {
               activePane={activePane}
               command="ls ~/Portfolio/project-list"
               id="projects"
+              isZoomed={zoomedPane === "projects"}
+              onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
               title="Projects"
             >
@@ -1003,6 +1033,8 @@ export default function Home() {
               activePane={activePane}
               command="cat ~/Portfolio/experience.log"
               id="background"
+              isZoomed={zoomedPane === "background"}
+              onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
               title="Background"
             >
@@ -1019,6 +1051,8 @@ export default function Home() {
               activePane={activePane}
               command='grep -R "research" ~/Portfolio'
               id="research"
+              isZoomed={zoomedPane === "research"}
+              onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
               title="Research"
             >
@@ -1033,6 +1067,8 @@ export default function Home() {
               activePane={activePane}
               command="cat ~/Portfolio/about.md"
               id="about"
+              isZoomed={zoomedPane === "about"}
+              onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
               title="About"
             >
@@ -1068,7 +1104,9 @@ export default function Home() {
 
         <footer className="tmux-statusbar">
           <span className="status-left">0:bash*</span>
-          <span className="status-center">{activePane}</span>
+          <span className="status-center">
+            {zoomedPane ? `${zoomedPane}:zoom` : activePane}
+          </span>
           <span className="status-right">
             theme:{selectedTheme} video:{selectedVideo} audio:
             {selectedMusicOption.label.toLowerCase()} opacity:

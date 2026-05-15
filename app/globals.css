@@ -191,6 +191,26 @@ a {
   min-height: 0;
 }
 
+.tmux-grid.is-zoomed {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.tmux-grid.is-zoomed .tmux-row {
+  display: contents;
+}
+
+.tmux-grid.is-zoomed .tmux-pane:not(.is-zoomed) {
+  display: none;
+}
+
+.tmux-grid.is-zoomed .tmux-pane.is-zoomed {
+  border-bottom: 0;
+  border-right: 0;
+  grid-column: 1;
+  grid-row: 1;
+}
+
 .tmux-row {
   display: grid;
   gap: 0;
@@ -271,6 +291,33 @@ a {
 
 .tmux-pane.is-active .pane-titlebar {
   color: var(--terminal-active);
+}
+
+.pane-zoom-toggle {
+  align-items: center;
+  appearance: none;
+  background: rgba(var(--terminal-bg-rgb), var(--terminal-pane-opacity));
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  height: 1.45em;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  right: 0.65em;
+  top: 0;
+  width: 3ch;
+  z-index: 1;
+}
+
+.pane-zoom-toggle:hover,
+.pane-zoom-toggle:focus-visible,
+.pane-zoom-toggle[aria-pressed="true"] {
+  color: var(--terminal-accent);
+  outline: none;
 }
 
 .pane-body {
