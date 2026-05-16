@@ -15,6 +15,7 @@ export type ProjectItem = {
   institution: string;
   summary: string;
   bullets: string[];
+  fullImageUrl?: string;
   imagePosition?: string;
   imageUrl?: string;
   metrics?: string;
@@ -68,7 +69,7 @@ export const profileContent: ProfileContent = {
   location: "Dubai, UAE",
   name: "Taufiq Syed",
   resumePath: "/resume/Taufiq-Syed-CV-Jan-2026.pdf",
-  summary: "AUS Computer Science graduate building across AI, data, and software.",
+  summary: "AUS Computer Science graduate building applied AI and software systems.",
 };
 
 export const projects: ProjectItem[] = [
@@ -78,9 +79,10 @@ export const projects: ProjectItem[] = [
     institution: "American University of Sharjah - COE 476",
     summary: "MusicGen LoRA fine-tuning with structural prompt extraction.",
     bullets: [
-      "Processed a music dataset into music-prompt pairs with extracted structural information.",
+      "Prepared music-prompt pairs from audio metadata and structural annotations.",
       "Finetuned the MusicGen transformer using a LoRA adaptor.",
     ],
+    fullImageUrl: "/images/projects/source/music-structures.png",
     imageUrl: "/images/projects/music-structures.png",
     metrics: "CLAP LAION FAD: 0.9959; Overall Quality: 70.48/100",
     tags: ["musicgen", "lora", "ml"],
@@ -91,8 +93,9 @@ export const projects: ProjectItem[] = [
     institution: "American University of Sharjah - CMP 466",
     summary: "12-class garbage classification using CNN feature extraction.",
     bullets: [
-      "Processed a 12-class garbage classification dataset using CNN feature extraction with TensorFlow and scikit-learn.",
+      "Extracted CNN embeddings with TensorFlow and trained classifiers in scikit-learn.",
     ],
+    fullImageUrl: "/images/projects/source/waste-classification.png",
     imageUrl: "/images/projects/waste-classification.png",
     metrics: "MobileNetV2 Accuracy: 0.93; Weighted F1: 0.93",
     tags: ["tensorflow", "cnn", "classification"],
@@ -101,11 +104,12 @@ export const projects: ProjectItem[] = [
     id: "fraud-detection",
     name: "Bank Account Fraud Detection",
     institution: "American University of Sharjah - STA 401",
-    summary: "Balanced data mining for highly imbalanced fraud detection.",
+    summary: "Balanced data mining for bank account fraud risk.",
     bullets: [
-      "Used balanced data mining approaches including LDA, SMOTE, and Balanced Random Forest.",
-      "Achieved competitive results on a highly imbalanced dataset.",
+      "Evaluated LDA, SMOTE, and Balanced Random Forest under severe class imbalance.",
+      "Reported competitive recall and AUC for fraud-screening workflows.",
     ],
+    fullImageUrl: "/images/projects/source/fraud-detection.png",
     imageUrl: "/images/projects/fraud-detection.png",
     metrics: "Recall: 0.79; AUC: 0.88",
     tags: ["data-mining", "smote", "fraud"],
@@ -116,9 +120,10 @@ export const projects: ProjectItem[] = [
     institution: "AUS College of Engineering",
     summary: "Cross-platform event attendance app with offline caching.",
     bullets: [
-      "Utilized Flutter for cross-platform mobile application development.",
+      "Built the mobile client in Flutter for iOS and Android.",
       "Integrated a Node.js backend, configured notifications, and implemented offline caching.",
     ],
+    fullImageUrl: "/images/projects/source/attendance-event-app.jpeg",
     imageUrl: "/images/projects/attendance-event-app.png",
     tags: ["flutter", "node", "events"],
   },
@@ -128,9 +133,10 @@ export const projects: ProjectItem[] = [
     institution: "Personal Project",
     summary: "Reddit-style full-stack app with authentication and PostgreSQL.",
     bullets: [
-      "Used React and Next.js to build a front-end clone of Reddit.",
+      "Built a Reddit-style frontend with React and Next.js.",
       "Created a Node.js and Express backend with PostgreSQL and JWT authentication.",
     ],
+    fullImageUrl: "/images/projects/source/reddit-clone.png",
     imageUrl: "/images/projects/reddit-clone.png",
     repoUrl: "https://github.com/TaufiqSyed/reddit-clone/",
     tags: ["next", "express", "postgres"],
@@ -141,9 +147,10 @@ export const projects: ProjectItem[] = [
     institution: "American University of Sharjah - CMP320",
     summary: "Restaurant operations system built with Next.js and Django.",
     bullets: [
-      "Built a restaurant management system using React, Next.js, and Django.",
+      "Built the operations system using React, Next.js, and Django.",
       "Implemented user authentication and management features.",
     ],
+    fullImageUrl: "/images/projects/source/restaurant-management.png",
     imageUrl: "/images/projects/restaurant-management.png",
     imagePosition: "left center",
     repoUrl: "https://github.com/TaufiqSyed/restaurant-app",
@@ -158,11 +165,11 @@ export const experiences: ExperienceItem[] = [
     organization: "Belsons Technologies",
     period: "Aug 2025 - Present",
     location: "Dubai, UAE",
-    summary: "ERP features, access control, RBAC, and automated tests.",
+    summary: "ERP features, RBAC, and automated tests.",
     details: [
       "Extended a proprietary ERP system by developing and enhancing full-stack features to support evolving business needs.",
-      "Architected and implemented a project-wide access control system to manage roles and permissions securely.",
-      "Implemented interfaces for multi-tenant management and fine-grained, role-based access control across the application.",
+      "Architected a project-wide access control system for roles and permissions.",
+      "Built multi-tenant management interfaces around the new RBAC model.",
       "Created automated tests to validate core business logic and improve system reliability.",
     ],
     siteUrl: "https://belsons.com/",
@@ -302,19 +309,19 @@ export const educationItems: EducationItem[] = [
   {
     id: "aus-computer-science",
     title: "Bachelor of Science in Computer Science",
-    summary: "American University of Sharjah / minor in Data Science.",
+    summary: "American University of Sharjah / Data Science minor.",
     meta: "09/2021 - 06/2025 / GPA 3.41",
     details: [
-      "Completed a Bachelor of Science in Computer Science with a minor in Data Science.",
-      "Coursework included Neural Networks, Artificial Intelligence, Data Mining, Stochastic Systems, Data Science, Recommendation Systems, and Database Systems.",
-      "Built research and applied engineering work alongside student leadership and technical community organizing.",
+      "Built a foundation across AI, software engineering, and data-driven systems.",
+      "Completed coursework in Neural Networks, Artificial Intelligence, Data Mining, Stochastic Systems, Recommendation Systems, and Database Systems.",
+      "Balanced research, applied engineering projects, and technical community leadership.",
     ],
     tags: ["aus", "computer-science", "ai"],
   },
   {
     id: "certifications",
     title: "Certifications",
-    summary: "AWS Certified Cloud Practitioner and Deep Learning specialization.",
+    summary: "Cloud fundamentals and deep learning training.",
     meta: "Professional development",
     details: [
       "AWS Certified Cloud Practitioner.",
@@ -325,7 +332,7 @@ export const educationItems: EducationItem[] = [
   {
     id: "leadership",
     title: "Tech Leadership",
-    summary: "Open Source Club presidency and campus tech community work.",
+    summary: "Campus technical leadership and community building.",
     meta: "American University of Sharjah / 2023-2024",
     details: [
       "President of the Open Source Club from 2023 to 2024.",
@@ -337,14 +344,14 @@ export const educationItems: EducationItem[] = [
   {
     id: "achievements",
     title: "Achievements",
-    summary: "Hackathons, programming contests, and GITEX Future Disruptors placements.",
+    summary: "Hackathons, programming contests, and technical competitions.",
     meta: "2022-2025",
     details: [
-      "Secured 2nd in Noon Cake Product Management Hackathon in 2025.",
+      "Placed 2nd in Noon Cake Product Management Hackathon in 2025.",
       "2nd place in SoftwareAG GITEX Future Disruptors in 2023.",
       "1st place in the AUS Programming Contest in 2022.",
       "2nd place in the ADU STEM Programming Contest in 2022.",
-      "Secured 2nd in AUS Tech-centric Hackathon in 2022.",
+      "Placed 2nd in AUS Tech-centric Hackathon in 2022.",
       "Participated in Gulf Programming Contest, placing 5th out of 30 teams in 2022.",
     ],
     tags: ["awards", "contests", "aus"],

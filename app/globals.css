@@ -67,7 +67,7 @@ a {
   --terminal-action-resume: var(--terminal-accent);
   --terminal-action-email: var(--terminal-cyan);
   --terminal-action-github: var(--terminal-active);
-  --terminal-action-linkedin: var(--terminal-gradient-end);
+  --terminal-action-linkedin: var(--terminal-yellow);
   --terminal-muted-surface: rgba(65, 72, 104, 0.14);
   --terminal-selected: rgba(65, 72, 104, 0.24);
   align-items: center;
@@ -147,6 +147,8 @@ a {
   --terminal-gradient-start: #83a598;
   --terminal-gradient-mid: #d3869b;
   --terminal-gradient-end: #fabd2f;
+  --terminal-action-github: #83a598;
+  --terminal-action-linkedin: #d3869b;
   --terminal-muted-surface: rgba(80, 73, 69, 0.14);
   --terminal-selected: rgba(80, 73, 69, 0.24);
 }
@@ -226,7 +228,7 @@ a {
 }
 
 .tmux-row-bottom {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(24ch, 0.46fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(28ch, 0.52fr);
   margin-top: -0.72em;
   position: relative;
   z-index: 4;
@@ -423,7 +425,7 @@ a {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.25em;
+  gap: 0.4em;
   justify-content: center;
   min-height: 0;
   text-align: center;
@@ -442,16 +444,42 @@ a {
   white-space: pre;
 }
 
+.portrait-button {
+  align-items: center;
+  appearance: none;
+  align-self: center;
+  background: transparent;
+  border: 0;
+  color: var(--terminal-fg);
+  cursor: default;
+  display: grid;
+  flex: 0 0 auto;
+  inline-size: 36ch;
+  justify-items: center;
+  margin: -1.25em auto -0.7em;
+  min-block-size: 21em;
+  overflow: visible;
+  padding: 0;
+  position: relative;
+  user-select: none;
+}
+
+.portrait-button:hover,
+.portrait-button:focus-visible {
+  color: var(--terminal-fg);
+  outline: 0;
+}
+
 .ansi-portrait {
   color: var(--terminal-fg);
-  align-self: center;
-  flex: 0 0 auto;
   font-size: calc(var(--terminal-font-size) * 0.5445);
   line-height: 0.6;
-  margin: -1.25em auto -0.9em;
+  margin: 0;
   max-height: none;
   overflow: visible;
+  pointer-events: none;
   text-align: left;
+  user-select: none;
 }
 
 .name-gradient {
@@ -599,6 +627,7 @@ a {
 }
 
 .pane-scroll-region {
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
   padding-right: 0.2em;
@@ -688,6 +717,13 @@ a {
   scrollbar-width: thin;
 }
 
+.experience-detail {
+  flex: 0 0 auto;
+  margin-top: auto;
+  max-height: none;
+  overflow: visible;
+}
+
 .pane-detail-dock::-webkit-scrollbar {
   height: 8px;
   width: 8px;
@@ -754,6 +790,18 @@ a {
   gap: 1ch;
 }
 
+.terminal-image-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: zoom-in;
+  display: block;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+}
+
 .detail-logo-link {
   color: inherit;
   display: block;
@@ -763,6 +811,12 @@ a {
 .detail-logo-link:hover {
   outline: 1px solid var(--terminal-accent);
   outline-offset: 2px;
+}
+
+.terminal-image-button:hover,
+.terminal-image-button:focus-visible {
+  outline: 1px solid var(--terminal-accent);
+  outline-offset: -1px;
 }
 
 .detail-logo {
@@ -793,6 +847,11 @@ a {
   display: block;
   height: 100%;
   object-fit: contain;
+  width: 100%;
+}
+
+.terminal-image-button {
+  height: 100%;
   width: 100%;
 }
 
@@ -1140,7 +1199,8 @@ a {
   display: flex;
   inset: 0;
   justify-content: center;
-  padding: 2em;
+  overflow: auto;
+  padding: clamp(1em, 5svh, 2em);
   position: fixed;
   z-index: 20;
 }
@@ -1154,6 +1214,9 @@ a {
     );
   border: 1px solid var(--terminal-border);
   color: var(--terminal-fg);
+  display: flex;
+  flex-direction: column;
+  max-height: min(86svh, 54em);
   max-width: min(64ch, 100%);
   overflow: hidden;
   width: 64ch;
@@ -1187,6 +1250,10 @@ a {
   filter: brightness(1.2);
 }
 
+.mac-dot-disabled {
+  cursor: default;
+}
+
 .mac-dot-red {
   background: #ff5f57;
 }
@@ -1204,7 +1271,19 @@ a {
 .mac-window-body {
   display: grid;
   gap: 1em;
+  overflow: auto;
   padding: 1.2em;
+  scrollbar-color: var(--terminal-border) transparent;
+  scrollbar-width: thin;
+}
+
+.mac-window-body::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.mac-window-body::-webkit-scrollbar-thumb {
+  background: var(--terminal-border);
 }
 
 .mac-window-body h2 {
@@ -1218,6 +1297,7 @@ a {
   display: grid;
   gap: 0.4em 1.2ch;
   grid-template-columns: max-content minmax(0, 1fr);
+  min-width: 0;
 }
 
 .shortcut-grid span {
@@ -1228,6 +1308,46 @@ a {
 .shortcut-grid p {
   color: var(--terminal-fg);
   margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.command-menu-actions {
+  border-top: 1px dashed var(--terminal-border);
+  display: grid;
+  gap: 0.55em;
+  padding-top: 0.9em;
+}
+
+.command-menu-action {
+  align-items: center;
+  background: color-mix(in srgb, var(--terminal-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--terminal-accent) 72%, transparent);
+  color: var(--terminal-accent);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  justify-self: start;
+  max-width: 100%;
+  min-height: 1.7em;
+  overflow-wrap: anywhere;
+  padding: 0.24em 0.72em;
+  text-align: left;
+  text-decoration: none;
+}
+
+.command-menu-action:hover,
+.command-menu-action:focus-visible {
+  background: color-mix(in srgb, var(--terminal-accent) 20%, transparent);
+  color: var(--terminal-fg);
+  outline: 1px solid currentColor;
+  outline-offset: -2px;
+}
+
+.command-menu-action.is-disabled {
+  border-color: var(--terminal-border);
+  color: var(--terminal-dim);
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .modal-action {
@@ -1236,12 +1356,219 @@ a {
   color: var(--terminal-accent);
   cursor: pointer;
   justify-self: start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 0.35em 0.85em;
+  text-align: left;
 }
 
 .modal-action:hover {
   background: color-mix(in srgb, var(--terminal-accent) 22%, transparent);
   color: var(--terminal-fg);
+}
+
+.image-preview-backdrop {
+  --image-preview-edge-space: clamp(4em, 10vw, 14em);
+  z-index: 24;
+}
+
+.image-preview-window {
+  height: auto;
+  max-height: calc(100svh - 1em);
+  max-width: calc(100vw - var(--image-preview-edge-space));
+  width: fit-content;
+}
+
+.image-preview-body {
+  gap: 0.7em;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.image-preview-frame {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 0.6em
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 1em
+    ),
+    var(--terminal-muted-surface);
+  border: 1px solid var(--terminal-border);
+  display: grid;
+  height: fit-content;
+  max-height: calc(100svh - 7em);
+  max-width: calc(100vw - var(--image-preview-edge-space) - 2.4em);
+  min-height: 0;
+  overflow: hidden;
+  place-items: center;
+  width: fit-content;
+}
+
+.image-preview-image {
+  display: block;
+  height: auto;
+  max-height: calc(100svh - 7em);
+  max-width: calc(100vw - var(--image-preview-edge-space) - 2.4em);
+  object-fit: contain;
+  object-position: center;
+  width: auto;
+}
+
+.shell-backdrop {
+  align-items: end;
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1.25em;
+  position: fixed;
+  z-index: 22;
+}
+
+.shell-drawer {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--terminal-bg) 96%, var(--terminal-cyan) 4%),
+      var(--terminal-bg)
+    );
+  border: 1px solid var(--terminal-border);
+  box-shadow: 0 1.4em 5em rgba(0, 0, 0, 0.38);
+  color: var(--terminal-fg);
+  display: flex;
+  flex-direction: column;
+  height: min(52svh, 36em);
+  max-height: calc(100svh - 2.5em);
+  overflow: hidden;
+  width: min(96vw, 92ch);
+}
+
+.shell-output {
+  align-content: start;
+  display: grid;
+  gap: 0.55em;
+  flex: 1 1 auto;
+  grid-auto-rows: max-content;
+  min-height: 0;
+  overflow: auto;
+  padding: 1em 1.1em;
+  scrollbar-color: var(--terminal-border) transparent;
+  scrollbar-width: thin;
+}
+
+.shell-output::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.shell-output::-webkit-scrollbar-thumb {
+  background: var(--terminal-border);
+}
+
+.shell-entry {
+  display: grid;
+  gap: 0.12em;
+}
+
+.shell-line {
+  color: var(--terminal-fg);
+  font-size: var(--terminal-font-size);
+  line-height: var(--terminal-line-height);
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.shell-prompt {
+  color: var(--terminal-cyan);
+  font-weight: 800;
+}
+
+.shell-line-muted {
+  color: var(--terminal-dim);
+}
+
+.shell-line-error {
+  color: var(--terminal-gradient-end);
+}
+
+.shell-line-success {
+  color: var(--terminal-accent);
+}
+
+.arcade-process {
+  background: color-mix(in srgb, var(--terminal-bg) 72%, transparent);
+  border: 1px solid var(--terminal-border);
+  color: var(--terminal-fg);
+  display: grid;
+  gap: 0.55em;
+  margin-block: 0.2em;
+  max-width: 100%;
+  overflow: visible;
+  padding: 0.75em;
+}
+
+.arcade-status {
+  color: var(--terminal-accent);
+  display: flex;
+  font-size: var(--terminal-font-size);
+  font-weight: 800;
+  gap: 2ch;
+  justify-content: space-between;
+  line-height: var(--terminal-line-height);
+}
+
+.arcade-board {
+  color: var(--terminal-fg);
+  font: inherit;
+  line-height: 1.12;
+  margin: 0;
+  overflow: visible;
+  white-space: pre;
+}
+
+.arcade-hint {
+  color: var(--terminal-dim);
+  font-size: var(--terminal-font-size);
+  line-height: var(--terminal-line-height);
+  margin: 0;
+}
+
+.shell-input-row {
+  align-items: center;
+  border-top: 1px solid var(--terminal-border);
+  display: grid;
+  gap: 0.8ch;
+  grid-template-columns: max-content minmax(0, 1fr);
+  padding: 0.7em 1.1em;
+}
+
+.shell-input-row input {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--terminal-fg);
+  font: inherit;
+  min-width: 0;
+  outline: none;
+  padding: 0;
+}
+
+.shell-input-row:focus-within {
+  box-shadow: inset 0 1px 0 var(--terminal-accent);
+}
+
+.shell-process-row {
+  color: var(--terminal-dim);
 }
 
 .tmux-statusbar {
@@ -1257,6 +1584,19 @@ a {
   padding: 0 0.45em;
 }
 
+.status-left,
+.status-center,
+.status-right {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-left {
+  justify-self: start;
+}
+
 .status-center {
   color: var(--terminal-active);
   justify-self: center;
@@ -1265,9 +1605,6 @@ a {
 .status-right {
   color: var(--terminal-dim);
   justify-self: end;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media (max-width: 1200px) {
@@ -1312,6 +1649,18 @@ a {
   .research-citation-meta .detail-links,
   .research-citation-meta .tag-line {
     grid-column: 1 / -1;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 901px) {
+  .portrait-button {
+    inline-size: 32.4ch;
+    margin: -1.1em auto -0.65em;
+    min-block-size: 18.9em;
+  }
+
+  .ansi-portrait {
+    font-size: calc(var(--terminal-font-size) * 0.49005);
   }
 }
 
@@ -1362,6 +1711,25 @@ a {
     min-height: 34em;
   }
 
+  .tmux-row-bottom > .tmux-pane {
+    overflow: hidden;
+  }
+
+  .pane-detail-dock,
+  .research-detail {
+    max-height: none;
+  }
+
+  .research-detail {
+    overflow: auto;
+  }
+
+  .profile-output {
+    justify-content: flex-start;
+    overflow: auto;
+    padding-block: 0.4em;
+  }
+
   .tmux-statusbar {
     grid-template-columns: 1fr;
     padding: 0.35em 0.7em;
@@ -1380,6 +1748,49 @@ a {
     --terminal-font-size: 8.4px;
   }
 
+  .image-preview-backdrop {
+    --image-preview-edge-space: 1.6em;
+  }
+
+  .modal-backdrop {
+    align-items: flex-start;
+    padding: 0.8em;
+  }
+
+  .mac-help-window {
+    max-height: calc(100svh - 1.6em);
+    width: 100%;
+  }
+
+  .shortcut-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shortcut-grid p {
+    padding-left: 2ch;
+  }
+
+  .shell-backdrop {
+    align-items: stretch;
+    padding: 0.8em;
+  }
+
+  .shell-drawer {
+    align-self: end;
+    height: min(68svh, 42em);
+    max-height: calc(100svh - 1.6em);
+    width: 100%;
+  }
+
+  .shell-output {
+    min-height: 0;
+  }
+
+  .shell-input-row {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
   .pane-body {
     padding: 0.35em 0.6em 0.8em;
   }
@@ -1393,11 +1804,25 @@ a {
   }
 
   .terminal-row {
-    grid-template-columns: 1ch 1fr;
+    grid-template-columns: 1ch minmax(0, 1fr);
   }
 
+  .row-name,
   .row-summary {
     grid-column: 2;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .paper-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .paper-meta-card {
+    border-bottom: 1px dashed var(--terminal-border);
+    border-right: 0;
   }
 }
 

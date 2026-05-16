@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "ascii:profile": "node scripts/generate-profile-ansi.mjs public/images/taufiqpixelart.png public/ascii/profile.ansi 64 ascii",
+    "ascii:profile": "node scripts/generate-profile-ansi.mjs public/images/taufiqpixelart.png public/ascii/profile.ansi 64 ascii && node scripts/sync-profile-ansi-module.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

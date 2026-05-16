@@ -23,7 +23,9 @@ pnpm ascii:profile
 
 `pnpm ascii:profile` regenerates `public/ascii/profile.ansi` from
 `public/images/taufiqpixelart.png`. It uses `ffmpeg`/`ffprobe` to decode the
-source image and writes truecolor ANSI that the profile pane renders directly.
+source image, writes `public/ascii/profile.ansi`, and syncs
+`app/profile-ansi.ts` so the profile pane can render the portrait on the first
+paint without a placeholder flash.
 
 ## Project Structure
 
@@ -31,7 +33,6 @@ source image and writes truecolor ANSI that the profile pane renders directly.
 - `public/ascii/`: generated ANSI assets used by the site.
 - `public/images/`: source image assets, including the pixel-art portrait.
 - `public/videos/`: local background videos.
-- `public/audio/`: local ambient audio loops.
 - `public/resume/`: downloadable resume placeholder.
 - `scripts/`: local asset-generation scripts.
 - `tmux-reference-prototype/`: real tmux/iTerm prototype used as a visual
@@ -39,7 +40,7 @@ source image and writes truecolor ANSI that the profile pane renders directly.
 
 ## Notes
 
-- The UI stores theme, video, audio, pane opacity, and blur settings in
+- The UI stores theme, video, and pane opacity settings in
   `localStorage`.
 - The terminal font stack prefers `JetBrainsMono Nerd Font Mono` locally and
   falls back to regular JetBrains Mono.
