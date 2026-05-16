@@ -9,8 +9,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Taufiq Syed | Tmux Portfolio",
-  description: "A mouse-driven tmux-style portfolio by Taufiq Syed.",
+  title: "Taufiq Syed | Portfolio",
+  description: "Taufiq Syed. Showcasing projects, skills, and experience.",
 };
 
 export default function RootLayout({
