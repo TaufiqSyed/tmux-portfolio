@@ -46,4 +46,7 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/settings.json
 
+# Local source copies of resume PDFs. Public resume assets live under public/resume/.
+/*.pdf
+
 pm-vault

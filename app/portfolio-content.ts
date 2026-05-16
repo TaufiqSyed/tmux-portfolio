@@ -42,6 +42,7 @@ export type ResearchItem = {
   authors: string;
   institution: string;
   conference: string;
+  venueShort?: string;
   conferenceDate: string;
   publicationDate: string;
   publicationUrl: string;
@@ -55,6 +56,7 @@ export type EducationItem = {
   title: string;
   summary: string;
   details: string[];
+  meta?: string;
   tags?: string[];
 };
 
@@ -65,9 +67,8 @@ export const profileContent: ProfileContent = {
   linkedinUrl: "https://www.linkedin.com/in/taufiq-syed/",
   location: "Dubai, UAE",
   name: "Taufiq Syed",
-  resumePath: "/resume/Taufiq-Syed-CV-2025.pdf",
-  summary:
-    "Recent Computer Science graduate from the American University of Sharjah with a strong foundation in AI, data science, and software development.",
+  resumePath: "/resume/Taufiq-Syed-CV-Jan-2026.pdf",
+  summary: "AUS Computer Science graduate building across AI, data, and software.",
 };
 
 export const projects: ProjectItem[] = [
@@ -203,6 +204,24 @@ export const experiences: ExperienceItem[] = [
 
 export const researchItems: ResearchItem[] = [
   {
+    id: "irrigation-estimation-app",
+    title:
+      "A Smartphone-Based Application for Crop Irrigation Estimation in Selected South and Southeast Asia Countries",
+    summary:
+      "Mobile irrigation estimation app for data-scarce South and Southeast Asian regions.",
+    authors: "Daniel Simonet, Ajita Gupta, Taufiq Syed",
+    institution: "American University of Sharjah",
+    conference: "Sustainability 2026, 18(2), 990",
+    venueShort: "MDPI Sustainability",
+    conferenceDate: "2026",
+    publicationDate: "January 18, 2026",
+    publicationUrl: "https://www.mdpi.com/2071-1050/18/2/990",
+    doi: "10.3390/su18020990",
+    abstract:
+      "A smartphone-based irrigation planning application that estimates net and gross irrigation requirements using a soil-water-balance workflow, public meteorological data, region-specific effective rainfall equations, and simulation benchmarking against FAO CROPWAT.",
+    tags: ["flutter", "irrigation", "sustainability"],
+  },
+  {
     id: "self-reflective-story-generation",
     title:
       "Generative AI for Early Grade Story Generation Using a Self-Reflective Approach",
@@ -212,12 +231,13 @@ export const researchItems: ResearchItem[] = [
     institution: "American University of Sharjah",
     conference:
       "IEEE International Conference on Advanced Learning Technologies (ICALT)",
+    venueShort: "IEEE ICALT",
     conferenceDate: "July 14-17, 2025",
     publicationDate: "October 17, 2025",
     publicationUrl: "https://ieeexplore.ieee.org/document/11194798",
     doi: "10.1109/ICALT64023.2025.00058",
     abstract:
-      "This paper presents a self-reflective story generation framework using GPT-4o to support large-scale early grade reading assessments. By grounding generation in classic tales and incorporating iterative self-reflection, the approach improves adherence to EGRA criteria while maintaining narrative diversity. Automated metrics and human evaluations show that the framework enhances story quality, scalability, and cost efficiency, offering a practical solution for literacy assessment development.",
+      "Self-reflective GPT-4o pipeline for early-grade reading assessment stories, using classic-tale grounding and iterative review to improve EGRA alignment, quality, scalability, and cost efficiency.",
     tags: ["gpt-4o", "egra", "education"],
   },
   {
@@ -230,12 +250,13 @@ export const researchItems: ResearchItem[] = [
     institution: "American University of Sharjah",
     conference:
       "11th International Conference on Computing and Artificial Intelligence (ICCAI)",
+    venueShort: "IEEE ICCAI",
     conferenceDate: "March 28-31, 2025",
     publicationDate: "August 11, 2025",
     publicationUrl: "https://ieeexplore.ieee.org/document/11105584",
     doi: "10.1109/ICCAI66501.2025.00057",
     abstract:
-      "This study investigates preference tuning as a cost-effective alternative to full fine-tuning for generating high-quality children's reading comprehension stories. Using annotated examples inspired by classic tales, the approach improves story coherence, readability, and engagement while meeting EGRA standards. Results indicate that preference-tuned models outperform baseline LLMs, demonstrating strong potential for scalable and adaptable educational content generation.",
+      "Preference-tuned automatic story generation for children's reading comprehension, improving coherence, readability, engagement, and EGRA alignment without the cost of full fine-tuning.",
     tags: ["preference-tuning", "llm", "education"],
   },
   {
@@ -248,12 +269,13 @@ export const researchItems: ResearchItem[] = [
     institution: "American University of Sharjah",
     conference:
       "IEEE International Conference on Advanced Learning Technologies (ICALT)",
+    venueShort: "IEEE ICALT",
     conferenceDate: "July 1-4, 2024",
     publicationDate: "August 29, 2024",
     publicationUrl: "https://ieeexplore.ieee.org/document/10645935",
     doi: "10.1109/ICALT61570.2024.00063",
     abstract:
-      "This paper addresses the challenge of generating reading comprehension content for early grade assessments, an expensive and time-consuming task. It proposes leveraging GPT-4 mediated by a classic tales database to generate diverse stories that align with EGRA criteria. This approach ensures fairness through narrative variation and reduced cost while maintaining educational standards. The paper presents a systematic framework for selecting, adapting, and evaluating stories using both text metrics and human review.",
+      "Classic-tales grounded GPT-4 story generation for early-grade reading assessments, focused on diversity, EGRA alignment, lower content-development cost, and human/text-metric evaluation.",
     tags: ["gpt-4", "icalt", "literacy"],
   },
   {
@@ -265,12 +287,13 @@ export const researchItems: ResearchItem[] = [
       "Taslim Mahbub, Dana Dghaym, Aadhith Shankarnarayanan, Taufiq Syed, Salsabeel Shapsough, Imran Zualkarnan",
     institution: "American University of Sharjah",
     conference: "IEEE Access (Volume 12)",
+    venueShort: "IEEE Access",
     conferenceDate: "Published: September 19, 2024",
     publicationDate: "September 19, 2024",
     publicationUrl: "https://ieeexplore.ieee.org/document/10684184",
     doi: "10.1109/ACCESS.2024.3464242",
     abstract:
-      "This paper explores GPT-4's performance in identifying defects in a real-world software requirements specification for a mechanical lung ventilator. Using a zero-shot setting, GPT-4 was evaluated for its ability to detect ambiguity, inconsistency, and incompleteness. The study found GPT-4 was strongest in identifying incompleteness, though it struggled with inconsistency and ambiguity. Results highlight both the potential and current limitations of LLMs in industrial-scale requirements analysis.",
+      "Zero-shot GPT-4 evaluation on real software requirements, measuring how well it detects ambiguity, inconsistency, and incompleteness in an industrial-style specification.",
     tags: ["gpt-4", "requirements", "ieee-access"],
   },
 ];
@@ -279,18 +302,31 @@ export const educationItems: EducationItem[] = [
   {
     id: "aus-computer-science",
     title: "Bachelor of Science in Computer Science",
-    summary: "American University of Sharjah / GPA 3.41 / June 2025.",
+    summary: "American University of Sharjah / minor in Data Science.",
+    meta: "09/2021 - 06/2025 / GPA 3.41",
     details: [
-      "Studied computer science with a focus on AI, data science, and software systems.",
-      "Relevant coursework included Neural Networks, Artificial Intelligence, Data Mining, and related computer science foundations.",
+      "Completed a Bachelor of Science in Computer Science with a minor in Data Science.",
+      "Coursework included Neural Networks, Artificial Intelligence, Data Mining, Stochastic Systems, Data Science, Recommendation Systems, and Database Systems.",
       "Built research and applied engineering work alongside student leadership and technical community organizing.",
     ],
     tags: ["aus", "computer-science", "ai"],
   },
   {
+    id: "certifications",
+    title: "Certifications",
+    summary: "AWS Certified Cloud Practitioner and Deep Learning specialization.",
+    meta: "Professional development",
+    details: [
+      "AWS Certified Cloud Practitioner.",
+      "Coursera Deep Learning Specialization.",
+    ],
+    tags: ["aws", "deep-learning", "certs"],
+  },
+  {
     id: "leadership",
     title: "Tech Leadership",
     summary: "Open Source Club presidency and campus tech community work.",
+    meta: "American University of Sharjah / 2023-2024",
     details: [
       "President of the Open Source Club from 2023 to 2024.",
       "Activities Coordinator for the Technopreneurship Club.",
@@ -301,11 +337,15 @@ export const educationItems: EducationItem[] = [
   {
     id: "achievements",
     title: "Achievements",
-    summary: "Programming contests and GITEX Future Disruptors placements.",
+    summary: "Hackathons, programming contests, and GITEX Future Disruptors placements.",
+    meta: "2022-2025",
     details: [
+      "Secured 2nd in Noon Cake Product Management Hackathon in 2025.",
       "2nd place in SoftwareAG GITEX Future Disruptors in 2023.",
       "1st place in the AUS Programming Contest in 2022.",
       "2nd place in the ADU STEM Programming Contest in 2022.",
+      "Secured 2nd in AUS Tech-centric Hackathon in 2022.",
+      "Participated in Gulf Programming Contest, placing 5th out of 30 teams in 2022.",
     ],
     tags: ["awards", "contests", "aus"],
   },

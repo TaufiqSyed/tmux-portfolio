@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   educationItems,
   experiences,
@@ -51,8 +58,12 @@ type Rgb = {
   blue: number;
 };
 
-const legacySettingsStorageKey = "taufiq-portfolio-terminal-settings";
-const settingsStorageKey = "taufiq-portfolio-terminal-settings-v2";
+const legacySettingsStorageKeys = [
+  "taufiq-portfolio-terminal-settings",
+  "taufiq-portfolio-terminal-settings-v2",
+];
+const settingsStorageKey = "taufiq-portfolio-terminal-settings-v3";
+const onboardingStorageKey = "taufiq-portfolio-hide-command-help";
 
 const terminalThemes: SelectOption[] = [
   { id: "dracula", label: "Dracula" },
@@ -62,6 +73,7 @@ const terminalThemes: SelectOption[] = [
 ];
 
 const videoOptions: MediaOption[] = [
+  { id: "none", label: "None" },
   { id: "blue", label: "Blue", src: "/videos/blue.mp4" },
   { id: "aurora", label: "Aurora", src: "/videos/aurora-drift.mp4" },
 ];
@@ -84,10 +96,22 @@ const opacityOptions: SelectOption[] = [
 
 const defaultTerminalSettings: TerminalSettings = {
   music: "none",
-  opacity: "0.85",
-  theme: "tokyo-night",
-  video: "aurora",
+  opacity: "0.95",
+  theme: "catppuccin-mocha",
+  video: "blue",
 };
+
+type SettingGroupId = keyof TerminalSettings;
+
+const settingGroups: {
+  id: SettingGroupId;
+  options: SelectOption[] | MediaOption[];
+}[] = [
+  { id: "theme", options: terminalThemes },
+  { id: "video", options: videoOptions },
+  { id: "opacity", options: opacityOptions },
+  { id: "music", options: musicOptions },
+];
 
 function hasOption(
   options: SelectOption[] | MediaOption[],
@@ -103,7 +127,7 @@ function readStoredSettings(): StoredSettings {
 
   try {
     const stored = window.localStorage.getItem(settingsStorageKey);
-    window.localStorage.removeItem(legacySettingsStorageKey);
+    legacySettingsStorageKeys.forEach((key) => window.localStorage.removeItem(key));
     return stored ? (JSON.parse(stored) as StoredSettings) : {};
   } catch {
     window.localStorage.removeItem(settingsStorageKey);
@@ -128,6 +152,79 @@ function getInitialTerminalSettings(): TerminalSettings {
       ? stored.video
       : defaultTerminalSettings.video,
   };
+}
+
+const stackedPaneOrder = [
+  "profile",
+  "projects",
+  "experience",
+  "research",
+  "education",
+  "settings",
+];
+
+function paneForDirection(
+  activePane: string,
+  direction: "h" | "j" | "k" | "l",
+  isStacked = false,
+) {
+  if (isStacked) {
+    const currentIndex = stackedPaneOrder.indexOf(activePane);
+    const safeIndex = currentIndex < 0 ? 0 : currentIndex;
+
+    if (direction === "j") {
+      return stackedPaneOrder[(safeIndex + 1) % stackedPaneOrder.length];
+    }
+
+    if (direction === "k") {
+      return stackedPaneOrder[
+        (safeIndex - 1 + stackedPaneOrder.length) % stackedPaneOrder.length
+      ];
+    }
+
+    return activePane;
+  }
+
+  const paneGrid: Record<string, Record<"h" | "j" | "k" | "l", string>> = {
+    education: {
+      h: "research",
+      j: "projects",
+      k: "projects",
+      l: "settings",
+    },
+    experience: {
+      h: "projects",
+      j: "settings",
+      k: "settings",
+      l: "profile",
+    },
+    profile: {
+      h: "experience",
+      j: "research",
+      k: "research",
+      l: "projects",
+    },
+    projects: {
+      h: "profile",
+      j: "education",
+      k: "education",
+      l: "experience",
+    },
+    research: {
+      h: "settings",
+      j: "profile",
+      k: "profile",
+      l: "education",
+    },
+    settings: {
+      h: "education",
+      j: "experience",
+      k: "experience",
+      l: "research",
+    },
+  };
+
+  return paneGrid[activePane]?.[direction] ?? activePane;
 }
 
 const fallbackPortrait = String.raw`
@@ -156,11 +253,11 @@ const paneAsciiTitles: Record<string, string> = {
     "| _|| |) | |_| | (__ / _ \\| |  | | (_) | .` |",
     "|___|___/ \\___/ \\___/_/ \\_\\_| |___\\___/|_|\\_|",
   ].join("\n"),
-  background: [
-    " ___   _   ___ _  _____ ___ ___  ___  _   _ _  _ ___",
-    "| _ ) /_\\ / __| |/ / __| _ \\ _ \\/ _ \\| | | | \\| |   \\",
-    "| _ \\/ _ \\ (__| ' < (_ |   /   / (_) | |_| | .` | |) |",
-    "|___/_/ \\_\\___|_|\\_\\___|_|_\\_|_\\\\___/ \\___/|_|\\_|___/",
+  experience: [
+    " _____  _____ ___ ___ ___ ___ _  _  ___ ___",
+    "| __\\ \\/ / _ \\ __| _ \\_ _| __| \\| |/ __| __|",
+    "| _| >  <|  _/ _||   /| || _|| .` | (__| _|",
+    "|___/_/\\_\\_| |___|_|_\\___|___|_|\\_|\\___|___|",
   ].join("\n"),
   projects: [
     " ___ ___  ___      _ ___ ___ _____ ___",
@@ -173,6 +270,12 @@ const paneAsciiTitles: Record<string, string> = {
     "| _ \\ __/ __| __| /_\\ | _ \\/ __| || |",
     "|   / _|\\__ \\ _| / _ \\|   / (__| __ |",
     "|_|_\\___|___/___/_/ \\_\\_|_\\\\___|_||_|",
+  ].join("\n"),
+  settings: [
+    " ___ ___ _____ _____ ___ _  _  ___ ___",
+    "/ __| __|_   _|_   _|_ _| \\| |/ __/ __|",
+    "\\__ \\ _|  | |   | |  | || .` | (_ \\__ \\",
+    "|___/___| |_|   |_| |___|_|\\_|\\___|___/",
   ].join("\n"),
 };
 
@@ -467,7 +570,10 @@ function parseAnsi(input: string, theme: string): AnsiToken[] {
         index += 2;
       } else if (code === 38 && codes[index + 1] === 2) {
         const [red, green, blue] = codes.slice(index + 2, index + 5);
-        style = { ...style, color: themedPortraitColor(red, green, blue, theme) };
+        style = {
+          ...style,
+          color: themedPortraitColor(red, green, blue, theme),
+        };
         index += 4;
       } else if (code === 48 && codes[index + 1] === 5) {
         style = {
@@ -500,9 +606,6 @@ function CommandLine({ command }: { command: string }) {
         <span className="prompt-muted">$</span>
         <span className="typed-command">{command}</span>
       </div>
-      <div className="post-command-line" aria-hidden="true">
-        <span className="terminal-cursor" />
-      </div>
     </div>
   );
 }
@@ -533,6 +636,8 @@ function TmuxPane({
       className={`tmux-pane ${activePane === id ? "is-active" : ""} ${
         isZoomed ? "is-zoomed" : ""
       }`}
+      data-pane-id={id}
+      onFocusCapture={() => setActivePane(id)}
       onPointerDown={() => setActivePane(id)}
       aria-label={title}
     >
@@ -568,20 +673,24 @@ function TmuxPane({
 }
 
 function ControlRow({
+  isFocused = false,
   icon,
   label,
+  onFocusRow,
   options,
   selected,
   onSelect,
 }: {
+  isFocused?: boolean;
   icon: string;
   label: string;
+  onFocusRow?: () => void;
   options: SelectOption[] | MediaOption[];
   selected: string;
   onSelect: (id: string) => void;
 }) {
   return (
-    <div className="control-row">
+    <div className={`control-row ${isFocused ? "is-focused" : ""}`}>
       <span className="control-icon" aria-hidden="true">
         {icon}
       </span>
@@ -594,7 +703,11 @@ function ControlRow({
             <button
               className={`option-token ${isSelected ? "is-selected" : ""}`}
               key={option.id}
-              onClick={() => onSelect(option.id)}
+              onClick={() => {
+                onFocusRow?.();
+                onSelect(option.id);
+              }}
+              onFocus={onFocusRow}
               type="button"
             >
               <span className="radio-dot" aria-hidden="true" />
@@ -653,6 +766,18 @@ function TerminalBullets({ items }: { items: string[] }) {
   );
 }
 
+function adjacentItemId<T extends { id: string }>(
+  items: T[],
+  currentId: string,
+  direction: -1 | 1,
+) {
+  const currentIndex = items.findIndex((item) => item.id === currentId);
+  const safeIndex = currentIndex < 0 ? 0 : currentIndex;
+  const nextIndex = (safeIndex + direction + items.length) % items.length;
+
+  return items[nextIndex]?.id ?? currentId;
+}
+
 function ProjectList({
   items,
   selectedId,
@@ -666,27 +791,29 @@ function ProjectList({
 
   return (
     <>
-      <div className="terminal-list terminal-list-readable" role="list">
-        {items.map((item) => {
-          const isSelected = item.id === selected.id;
+      <div className="pane-scroll-region">
+        <div className="terminal-list terminal-list-readable" role="list">
+          {items.map((item) => {
+            const isSelected = item.id === selected.id;
 
-          return (
-            <button
-              className={`terminal-row ${isSelected ? "is-selected" : ""}`}
-              key={item.id}
-              onClick={() => onSelect(item.id)}
-              role="listitem"
-              type="button"
-            >
-              <span className="row-caret">{isSelected ? ">" : " "}</span>
-              <span className="row-name">{item.name}</span>
-              <span className="row-summary">{item.summary}</span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                className={`terminal-row ${isSelected ? "is-selected" : ""}`}
+                key={item.id}
+                onClick={() => onSelect(item.id)}
+                role="listitem"
+                type="button"
+              >
+                <span className="row-caret">{isSelected ? ">" : " "}</span>
+                <span className="row-name">{item.name}</span>
+                <span className="row-summary">{item.summary}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <article className="detail-output">
+      <article className="detail-output pane-detail-dock">
         <div className="detail-media" aria-label={`${selected.name} preview`}>
           {selected.imageUrl ? (
             <Image
@@ -737,43 +864,68 @@ function ResearchList({
 
   return (
     <>
-      <div className="terminal-list terminal-list-readable" role="list">
-        {items.map((item) => {
-          const isSelected = item.id === selected.id;
+      <div className="pane-scroll-region">
+        <div
+          className="terminal-list terminal-list-readable research-list"
+          role="list"
+        >
+          {items.map((item) => {
+            const isSelected = item.id === selected.id;
 
-          return (
-            <button
-              className={`terminal-row ${isSelected ? "is-selected" : ""}`}
-              key={item.id}
-              onClick={() => onSelect(item.id)}
-              role="listitem"
-              type="button"
-            >
-              <span className="row-caret">{isSelected ? ">" : " "}</span>
-              <span className="row-name">{item.title}</span>
-              <span className="row-summary">{item.summary}</span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                className={`terminal-row ${isSelected ? "is-selected" : ""}`}
+                key={item.id}
+                onClick={() => onSelect(item.id)}
+                role="listitem"
+                type="button"
+              >
+                <span className="row-caret">{isSelected ? ">" : " "}</span>
+                <span className="row-name">{item.title}</span>
+                <span className="row-summary">
+                  {(item.venueShort ?? item.conference).replace(
+                    /^IEEE International Conference on /,
+                    "IEEE ",
+                  )}{" "}
+                  / {item.publicationDate}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <article className="detail-output compact research-detail">
-        <p className="detail-period">published: {selected.publicationDate}</p>
-        <h3>{selected.title}</h3>
-        <p className="detail-meta">
-          <span>authors:</span> {selected.authors}
-        </p>
-        <p className="detail-meta">
-          <span>venue:</span> {selected.conference} / {selected.conferenceDate}
-        </p>
-        <p>{selected.abstract}</p>
-        <p className="detail-meta">
-          <span>doi:</span> {selected.doi}
-        </p>
-        <Tags tags={selected.tags} />
-        <TerminalLinks
-          links={[{ href: selected.publicationUrl, label: "open publication" }]}
-        />
+      <article className="detail-output compact pane-detail-dock research-detail">
+        <div className="research-citation">
+          <aside
+            className="research-citation-meta"
+            aria-label="Publication metadata"
+          >
+            <div className="paper-rail" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <p className="paper-venue">
+              {selected.venueShort ?? selected.conference}
+            </p>
+            <p className="paper-date">{selected.publicationDate}</p>
+            <p className="detail-meta">
+              <span>doi:</span> {selected.doi}
+            </p>
+            <TerminalLinks
+              links={[
+                { href: selected.publicationUrl, label: "open publication" },
+              ]}
+            />
+          </aside>
+          <div className="research-citation-body">
+            <h3>{selected.title}</h3>
+            <p className="detail-meta compact-text">
+              <span>authors:</span> {selected.authors}
+            </p>
+          </div>
+        </div>
       </article>
     </>
   );
@@ -792,38 +944,57 @@ function ExperienceList({
 
   return (
     <>
-      <div className="terminal-list terminal-list-readable" role="list">
-        {items.map((item) => {
-          const isSelected = item.id === selected.id;
+      <div className="pane-scroll-region">
+        <div className="terminal-list terminal-list-readable" role="list">
+          {items.map((item) => {
+            const isSelected = item.id === selected.id;
 
-          return (
-            <button
-              className={`terminal-row ${isSelected ? "is-selected" : ""}`}
-              key={item.id}
-              onClick={() => onSelect(item.id)}
-              role="listitem"
-              type="button"
-            >
-              <span className="row-caret">{isSelected ? ">" : " "}</span>
-              <span className="row-name">{item.title}</span>
-              <span className="row-summary">
-                {item.organization} / {item.summary}
-              </span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                className={`terminal-row ${isSelected ? "is-selected" : ""}`}
+                key={item.id}
+                onClick={() => onSelect(item.id)}
+                role="listitem"
+                type="button"
+              >
+                <span className="row-caret">{isSelected ? ">" : " "}</span>
+                <span className="row-name">{item.title}</span>
+                <span className="row-summary">
+                  {item.organization} / {item.summary}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <article className="detail-output compact">
+      <article className="detail-output compact pane-detail-dock">
         <div className="detail-heading">
           {selected.logoUrl ? (
-            <Image
-              alt={`${selected.organization} logo`}
-              className="detail-logo"
-              height={32}
-              src={selected.logoUrl}
-              width={32}
-            />
+            selected.siteUrl ? (
+              <a
+                className="detail-logo-link"
+                href={selected.siteUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <Image
+                  alt={`${selected.organization} logo`}
+                  className="detail-logo"
+                  height={32}
+                  src={selected.logoUrl}
+                  width={32}
+                />
+              </a>
+            ) : (
+              <Image
+                alt={`${selected.organization} logo`}
+                className="detail-logo"
+                height={32}
+                src={selected.logoUrl}
+                width={32}
+              />
+            )
           ) : null}
           <h3>
             {selected.title} <span>@ {selected.organization}</span>
@@ -855,28 +1026,33 @@ function EducationList({
 
   return (
     <>
-      <div className="terminal-list terminal-list-readable" role="list">
-        {items.map((item) => {
-          const isSelected = item.id === selected.id;
+      <div className="pane-scroll-region">
+        <div className="terminal-list terminal-list-readable" role="list">
+          {items.map((item) => {
+            const isSelected = item.id === selected.id;
 
-          return (
-            <button
-              className={`terminal-row ${isSelected ? "is-selected" : ""}`}
-              key={item.id}
-              onClick={() => onSelect(item.id)}
-              role="listitem"
-              type="button"
-            >
-              <span className="row-caret">{isSelected ? ">" : " "}</span>
-              <span className="row-name">{item.title}</span>
-              <span className="row-summary">{item.summary}</span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                className={`terminal-row ${isSelected ? "is-selected" : ""}`}
+                key={item.id}
+                onClick={() => onSelect(item.id)}
+                role="listitem"
+                type="button"
+              >
+                <span className="row-caret">{isSelected ? ">" : " "}</span>
+                <span className="row-name">{item.title}</span>
+                <span className="row-summary">{item.summary}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <article className="detail-output compact">
+      <article className="detail-output compact pane-detail-dock education-detail">
         <h3>{selected.title}</h3>
+        {selected.meta ? (
+          <p className="detail-period">{selected.meta}</p>
+        ) : null}
         <p>{selected.summary}</p>
         <TerminalBullets items={selected.details} />
         <Tags tags={selected.tags} />
@@ -885,9 +1061,137 @@ function EducationList({
   );
 }
 
+function SettingsPanel({
+  focusedGroup,
+  selectedMusic,
+  selectedOpacity,
+  selectedTheme,
+  selectedVideo,
+  setFocusedGroup,
+  setSelectedMusic,
+  setSelectedOpacity,
+  setSelectedTheme,
+  setSelectedVideo,
+}: {
+  focusedGroup: SettingGroupId;
+  selectedMusic: string;
+  selectedOpacity: string;
+  selectedTheme: string;
+  selectedVideo: string;
+  setFocusedGroup: (id: SettingGroupId) => void;
+  setSelectedMusic: (id: string) => void;
+  setSelectedOpacity: (id: string) => void;
+  setSelectedTheme: (id: string) => void;
+  setSelectedVideo: (id: string) => void;
+}) {
+  return (
+    <div className="settings-output">
+      <ControlRow
+        isFocused={focusedGroup === "theme"}
+        icon="TH"
+        label="theme"
+        onFocusRow={() => setFocusedGroup("theme")}
+        onSelect={setSelectedTheme}
+        options={terminalThemes}
+        selected={selectedTheme}
+      />
+      <ControlRow
+        isFocused={focusedGroup === "video"}
+        icon="BG"
+        label="video"
+        onFocusRow={() => setFocusedGroup("video")}
+        onSelect={setSelectedVideo}
+        options={videoOptions}
+        selected={selectedVideo}
+      />
+      <ControlRow
+        isFocused={focusedGroup === "opacity"}
+        icon="OP"
+        label="opacity"
+        onFocusRow={() => setFocusedGroup("opacity")}
+        onSelect={setSelectedOpacity}
+        options={opacityOptions}
+        selected={selectedOpacity}
+      />
+      <ControlRow
+        isFocused={focusedGroup === "music"}
+        icon="AU"
+        label="music"
+        onFocusRow={() => setFocusedGroup("music")}
+        onSelect={setSelectedMusic}
+        options={musicOptions}
+        selected={selectedMusic}
+      />
+      <p className="terminal-note">status: settings persist locally</p>
+    </div>
+  );
+}
+
+function CommandHelpModal({
+  mode,
+  onClose,
+  onDismissOnboarding,
+}: {
+  mode: "help" | "onboarding";
+  onClose: () => void;
+  onDismissOnboarding: () => void;
+}) {
+  return (
+    <div className="modal-backdrop" role="presentation" onClick={onClose}>
+      <section
+        aria-label="Portfolio command help"
+        aria-modal="true"
+        className="mac-help-window"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+      >
+        <div className="mac-window-bar">
+          <button
+            aria-label="Close command help"
+            className="mac-dot mac-dot-red mac-dot-button"
+            onClick={onClose}
+            type="button"
+          />
+          <span className="mac-dot mac-dot-yellow" />
+          <span className="mac-dot mac-dot-green" />
+        </div>
+        <div className="mac-window-body">
+          <h2>
+            {mode === "onboarding"
+              ? "Press ? for commands at any time"
+              : "Commands"}
+          </h2>
+          <div className="shortcut-grid">
+            <span>?</span>
+            <p>open this command menu</p>
+            <span>Ctrl-b z</span>
+            <p>zoom or unzoom the active pane</p>
+            <span>Ctrl-b h/j/k/l</span>
+            <p>move between panes, tmux-style</p>
+            <span>Ctrl-b r</span>
+            <p>open my resume</p>
+            <span>Esc</span>
+            <p>close modal windows</p>
+          </div>
+          {mode === "onboarding" ? (
+            <button
+              className="modal-action"
+              onClick={onDismissOnboarding}
+              type="button"
+            >
+              don&apos;t show again
+            </button>
+          ) : null}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function Home() {
-  const [terminalSettings, setTerminalSettings] =
-    useState<TerminalSettings>(defaultTerminalSettings);
+  const [terminalSettings, setTerminalSettings] = useState<TerminalSettings>(
+    defaultTerminalSettings,
+  );
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [selectedProject, setSelectedProject] = useState(projects[0].id);
   const [selectedExperience, setSelectedExperience] = useState(
@@ -898,9 +1202,13 @@ export default function Home() {
     educationItems[0].id,
   );
   const [activePane, setActivePane] = useState("profile");
+  const [focusedSettingGroup, setFocusedSettingGroup] =
+    useState<SettingGroupId>("theme");
   const [zoomedPane, setZoomedPane] = useState<string | null>(null);
+  const [helpMode, setHelpMode] = useState<"help" | "onboarding" | null>(null);
   const [portrait, setPortrait] = useState(fallbackPortrait);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const tmuxPrefixRef = useRef(false);
 
   const selectedTheme = terminalSettings.theme;
   const selectedVideo = terminalSettings.video;
@@ -927,12 +1235,95 @@ export default function Home() {
     setZoomedPane((current) => (current === pane ? null : pane));
   };
 
+  const moveFocusedSettingOption = useCallback(
+    (direction: -1 | 1) => {
+      const focusedGroup =
+        settingGroups.find((group) => group.id === focusedSettingGroup) ??
+        settingGroups[0];
+
+      setTerminalSettings((current) => ({
+        ...current,
+        [focusedGroup.id]: adjacentItemId(
+          focusedGroup.options,
+          current[focusedGroup.id],
+          direction,
+        ),
+      }));
+    },
+    [focusedSettingGroup],
+  );
+
+  const moveFocusedSelection = useCallback(
+    (direction: -1 | 1, pane = activePane) => {
+      if (pane === "projects") {
+        setSelectedProject((current) =>
+          adjacentItemId(projects, current, direction),
+        );
+      } else if (pane === "experience") {
+        setSelectedExperience((current) =>
+          adjacentItemId(experiences, current, direction),
+        );
+      } else if (pane === "research") {
+        setSelectedResearch((current) =>
+          adjacentItemId(researchItems, current, direction),
+        );
+      } else if (pane === "education") {
+        setSelectedEducation((current) =>
+          adjacentItemId(educationItems, current, direction),
+        );
+      } else if (pane === "settings") {
+        setFocusedSettingGroup(
+          (current) =>
+            adjacentItemId(settingGroups, current, direction) as SettingGroupId,
+        );
+      }
+    },
+    [activePane],
+  );
+
+  const openFocusedSelection = useCallback(() => {
+    if (activePane === "projects") {
+      const project =
+        projects.find((item) => item.id === selectedProject) ?? projects[0];
+      const href = project.repoUrl ?? project.liveUrl;
+
+      if (href) {
+        window.open(href, "_blank", "noreferrer");
+      }
+    } else if (activePane === "experience") {
+      const experience =
+        experiences.find((item) => item.id === selectedExperience) ??
+        experiences[0];
+
+      if (experience.siteUrl) {
+        window.open(experience.siteUrl, "_blank", "noreferrer");
+      }
+    } else if (activePane === "research") {
+      const research =
+        researchItems.find((item) => item.id === selectedResearch) ??
+        researchItems[0];
+
+      window.open(research.publicationUrl, "_blank", "noreferrer");
+    } else if (activePane === "settings") {
+      moveFocusedSettingOption(1);
+    }
+  }, [
+    activePane,
+    moveFocusedSettingOption,
+    selectedExperience,
+    selectedProject,
+    selectedResearch,
+  ]);
+
   const selectedVideoOption =
     videoOptions.find((option) => option.id === selectedVideo) ??
-    videoOptions.find((option) => option.id === defaultTerminalSettings.video) ??
+    videoOptions.find(
+      (option) => option.id === defaultTerminalSettings.video,
+    ) ??
     videoOptions[0];
   const selectedMusicOption =
-    musicOptions.find((option) => option.id === selectedMusic) ?? musicOptions[0];
+    musicOptions.find((option) => option.id === selectedMusic) ??
+    musicOptions[0];
   const selectedOpacityOption =
     opacityOptions.find((option) => option.id === selectedOpacity) ??
     opacityOptions[2];
@@ -944,9 +1335,10 @@ export default function Home() {
   const shellStyle = useMemo(
     () =>
       ({
-        "--terminal-pane-opacity": selectedOpacity,
+        "--terminal-pane-opacity":
+          selectedVideo === "none" ? "1" : selectedOpacity,
       }) as CSSProperties,
-    [selectedOpacity],
+    [selectedOpacity, selectedVideo],
   );
 
   useEffect(() => {
@@ -973,6 +1365,14 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    window.queueMicrotask(() => {
+      if (window.localStorage.getItem(onboardingStorageKey) !== "true") {
+        setHelpMode("onboarding");
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -1025,23 +1425,150 @@ export default function Home() {
     });
   }, [selectedMusicOption]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      const eventPane =
+        event.target instanceof Element
+          ? event.target.closest<HTMLElement>("[data-pane-id]")?.dataset.paneId
+          : undefined;
+      const keyboardPane = eventPane ?? activePane;
+
+      if (event.key === "?") {
+        event.preventDefault();
+        setHelpMode("help");
+        return;
+      }
+
+      if (event.key === "Escape") {
+        setHelpMode(null);
+        tmuxPrefixRef.current = false;
+        return;
+      }
+
+      if (helpMode) {
+        return;
+      }
+
+      if (event.ctrlKey && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        tmuxPrefixRef.current = true;
+        return;
+      }
+
+      if (!tmuxPrefixRef.current) {
+        if (keyboardPane === "settings") {
+          if (event.key === "ArrowDown" || key === "j") {
+            event.preventDefault();
+            setActivePane("settings");
+            moveFocusedSelection(1, "settings");
+          } else if (event.key === "ArrowUp" || key === "k") {
+            event.preventDefault();
+            setActivePane("settings");
+            moveFocusedSelection(-1, "settings");
+          } else if (event.key === "ArrowRight" || key === "l") {
+            event.preventDefault();
+            setActivePane("settings");
+            moveFocusedSettingOption(1);
+          } else if (event.key === "ArrowLeft" || key === "h") {
+            event.preventDefault();
+            setActivePane("settings");
+            moveFocusedSettingOption(-1);
+          } else if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setActivePane("settings");
+            moveFocusedSettingOption(1);
+          }
+
+          return;
+        }
+
+        if (
+          event.key === "ArrowDown" ||
+          event.key === "ArrowRight" ||
+          key === "j"
+        ) {
+          event.preventDefault();
+          moveFocusedSelection(1);
+        } else if (
+          event.key === "ArrowUp" ||
+          event.key === "ArrowLeft" ||
+          key === "k"
+        ) {
+          event.preventDefault();
+          moveFocusedSelection(-1);
+        } else if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openFocusedSelection();
+        }
+
+        return;
+      }
+
+      tmuxPrefixRef.current = false;
+
+      if (key === "z") {
+        event.preventDefault();
+        setZoomedPane((current) =>
+          current === keyboardPane ? null : keyboardPane,
+        );
+        return;
+      }
+
+      if (key === "r") {
+        event.preventDefault();
+        window.open(profileContent.resumePath, "_blank", "noreferrer");
+        return;
+      }
+
+      if (key === "?") {
+        event.preventDefault();
+        setHelpMode("help");
+        return;
+      }
+
+      if (key === "h" || key === "j" || key === "k" || key === "l") {
+        event.preventDefault();
+        const sourcePane = zoomedPane ?? keyboardPane;
+        const isStacked = window.matchMedia("(max-width: 900px)").matches;
+        const nextPane = paneForDirection(sourcePane, key, isStacked);
+
+        setZoomedPane(null);
+        setActivePane(nextPane);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    activePane,
+    helpMode,
+    moveFocusedSettingOption,
+    moveFocusedSelection,
+    openFocusedSelection,
+    zoomedPane,
+  ]);
+
   return (
     <main
       className="portfolio-shell"
       data-theme={selectedTheme}
       style={shellStyle}
     >
-      <video
-        className="background-video"
-        key={selectedVideoOption.src}
-        aria-hidden="true"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        src={selectedVideoOption.src}
-      />
+      {selectedVideoOption.src ? (
+        <video
+          className="background-video"
+          key={selectedVideoOption.src}
+          aria-hidden="true"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          src={selectedVideoOption.src}
+        />
+      ) : null}
       <div className="background-scrim" aria-hidden="true" />
 
       <div className="tmux-window" aria-label="Taufiq Syed tmux portfolio">
@@ -1074,7 +1601,7 @@ export default function Home() {
                 <div className="profile-meta">
                   <p className="profile-headline">{profileContent.headline}</p>
                   <p>
-                    <span>based:</span> {profileContent.location}
+                    <span>based:</span> {profileContent.location} 🇦🇪
                   </p>
                   <p>{profileContent.summary}</p>
                 </div>
@@ -1122,36 +1649,6 @@ export default function Home() {
                     <span>linkedin</span>
                   </a>
                 </div>
-                <div className="control-stack">
-                  <ControlRow
-                    icon="TH"
-                    label="theme"
-                    onSelect={setSelectedTheme}
-                    options={terminalThemes}
-                    selected={selectedTheme}
-                  />
-                  <ControlRow
-                    icon="BG"
-                    label="video"
-                    onSelect={setSelectedVideo}
-                    options={videoOptions}
-                    selected={selectedVideo}
-                  />
-                  <ControlRow
-                    icon="OP"
-                    label="opacity"
-                    onSelect={setSelectedOpacity}
-                    options={opacityOptions}
-                    selected={selectedOpacity}
-                  />
-                  <ControlRow
-                    icon="AU"
-                    label="music"
-                    onSelect={setSelectedMusic}
-                    options={musicOptions}
-                    selected={selectedMusic}
-                  />
-                </div>
               </div>
             </TmuxPane>
 
@@ -1174,13 +1671,13 @@ export default function Home() {
 
             <TmuxPane
               activePane={activePane}
-              asciiTitle={paneAsciiTitles.background}
-              command="~/Portfolio/bin/background --interactive"
-              id="background"
-              isZoomed={zoomedPane === "background"}
+              asciiTitle={paneAsciiTitles.experience}
+              command="~/Portfolio/bin/experience --interactive"
+              id="experience"
+              isZoomed={zoomedPane === "experience"}
               onToggleZoom={togglePaneZoom}
               setActivePane={setActivePane}
-              title="Background"
+              title="Experience"
             >
               <ExperienceList
                 items={experiences}
@@ -1224,6 +1721,30 @@ export default function Home() {
                 selectedId={selectedEducation}
               />
             </TmuxPane>
+
+            <TmuxPane
+              activePane={activePane}
+              asciiTitle={paneAsciiTitles.settings}
+              command="./settings"
+              id="settings"
+              isZoomed={zoomedPane === "settings"}
+              onToggleZoom={togglePaneZoom}
+              setActivePane={setActivePane}
+              title="Settings"
+            >
+              <SettingsPanel
+                focusedGroup={focusedSettingGroup}
+                selectedMusic={selectedMusic}
+                selectedOpacity={selectedOpacity}
+                selectedTheme={selectedTheme}
+                selectedVideo={selectedVideo}
+                setFocusedGroup={setFocusedSettingGroup}
+                setSelectedMusic={setSelectedMusic}
+                setSelectedOpacity={setSelectedOpacity}
+                setSelectedTheme={setSelectedTheme}
+                setSelectedVideo={setSelectedVideo}
+              />
+            </TmuxPane>
           </div>
         </div>
 
@@ -1241,6 +1762,16 @@ export default function Home() {
       </div>
 
       <audio ref={audioRef} />
+      {helpMode ? (
+        <CommandHelpModal
+          mode={helpMode}
+          onClose={() => setHelpMode(null)}
+          onDismissOnboarding={() => {
+            window.localStorage.setItem(onboardingStorageKey, "true");
+            setHelpMode(null);
+          }}
+        />
+      ) : null}
     </main>
   );
 }
