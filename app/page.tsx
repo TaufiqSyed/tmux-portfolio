@@ -953,6 +953,17 @@ function getInitialTerminalSettings(): TerminalSettings {
   };
 }
 
+function preloadBrowserImage(src?: string) {
+  if (!src || typeof window === "undefined") {
+    return;
+  }
+
+  const image = new window.Image();
+  image.decoding = "async";
+  image.src = src;
+  void image.decode?.().catch(() => undefined);
+}
+
 const stackedPaneOrder = [
   "profile",
   "projects",
@@ -1557,6 +1568,7 @@ function TmuxPane({
       data-pane-id={id}
       onFocusCapture={() => setActivePane(id)}
       onPointerDown={() => setActivePane(id)}
+      tabIndex={-1}
       aria-label={title}
     >
       <div className="pane-titlebar">
@@ -1708,6 +1720,11 @@ function ProjectList({
   onSelect: (id: string) => void;
 }) {
   const selected = items.find((item) => item.id === selectedId) ?? items[0];
+  const selectedImageSrc = selected.fullImageUrl ?? selected.imageUrl;
+
+  useEffect(() => {
+    preloadBrowserImage(selectedImageSrc);
+  }, [selectedImageSrc]);
 
   return (
     <>
@@ -1742,10 +1759,12 @@ function ProjectList({
               onClick={() =>
                 onPreviewImage({
                   alt: `${selected.name} preview`,
-                  src: selected.fullImageUrl ?? selected.imageUrl ?? "",
+                  src: selectedImageSrc ?? "",
                   title: selected.name,
                 })
               }
+              onFocus={() => preloadBrowserImage(selectedImageSrc)}
+              onPointerEnter={() => preloadBrowserImage(selectedImageSrc)}
               type="button"
             >
               <Image
@@ -2193,6 +2212,8 @@ function ImagePreviewModal({
             <img
               alt={preview.alt}
               className="image-preview-image"
+              decoding="sync"
+              loading="eager"
               src={preview.src}
             />
           </div>
@@ -2449,6 +2470,7 @@ export default function Home() {
   const queuedJokeIndexesRef = useRef<number[]>([]);
   const lastJokeIndexRef = useRef<number | null>(null);
   const tmuxPrefixRef = useRef(false);
+  const preloadedProjectImageSourcesRef = useRef<Set<string>>(new Set());
 
   const selectedTheme = terminalSettings.theme;
   const selectedVideo = terminalSettings.video;
@@ -2940,6 +2962,27 @@ export default function Home() {
   }, [settingsLoaded, terminalSettings]);
 
   useEffect(() => {
+    if (!settingsLoaded) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      projects.forEach((project) => {
+        const src = project.fullImageUrl ?? project.imageUrl;
+
+        if (!src || preloadedProjectImageSourcesRef.current.has(src)) {
+          return;
+        }
+
+        preloadedProjectImageSourcesRef.current.add(src);
+        preloadBrowserImage(src);
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [settingsLoaded]);
+
+  useEffect(() => {
     if (shellProcess !== "pong" && shellProcess !== "brick") {
       return;
     }
@@ -3080,12 +3123,17 @@ export default function Home() {
 
       if (key === "h" || key === "j" || key === "k" || key === "l") {
         event.preventDefault();
-        const sourcePane = zoomedPane ?? keyboardPane;
+        const sourcePane = zoomedPane ?? activePane;
         const isStacked = window.matchMedia("(max-width: 900px)").matches;
         const nextPane = paneForDirection(sourcePane, key, isStacked);
 
         setZoomedPane(null);
         setActivePane(nextPane);
+        window.requestAnimationFrame(() => {
+          document
+            .querySelector<HTMLElement>(`[data-pane-id="${nextPane}"]`)
+            ?.focus();
+        });
       }
     };
 
@@ -3105,6 +3153,17 @@ export default function Home() {
   ]);
 
   return (
+    !settingsLoaded ? (
+      <main
+        aria-label="Loading Taufiq Syed tmux portfolio"
+        className="portfolio-shell portfolio-shell-boot"
+        data-theme={defaultTerminalSettings.theme}
+      >
+        <div className="terminal-boot-frame" aria-hidden="true">
+          <span>booting portfolio session...</span>
+        </div>
+      </main>
+    ) : (
     <main
       className="portfolio-shell"
       data-theme={selectedTheme}
@@ -3358,5 +3417,6 @@ export default function Home() {
         />
       ) : null}
     </main>
+    )
   );
 }
